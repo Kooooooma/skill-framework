@@ -1,0 +1,19 @@
+{
+  "framework": "skill-framework/v1",
+  "graphs": {
+    "execute": {
+      "execution": {
+        "mode": "topological",
+        "parallel_policy": "conservative"
+      },
+      "nodes": {
+        "main": {
+          "contract": "contracts/nodes.json#/nodes/main",
+          "depends_on": [],
+          "writes": ["node_result"],
+          "join": "all"
+        }
+      }
+    }
+  }
+}

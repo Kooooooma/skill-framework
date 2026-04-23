@@ -1,0 +1,43 @@
+{
+  "framework": "skill-framework/v1",
+  "artifacts": {
+    "skill_entrypoint": {
+      "path": "SKILL.md",
+      "kind": "markdown",
+      "required": true,
+      "sections": [
+        "# __SKILL_TITLE__",
+        "## Core Model",
+        "## Execution Workflow",
+        "## Invariants",
+        "## Runtime",
+        "## Completion Standard"
+      ]
+    },
+    "theory": {
+      "path": "theory.md",
+      "kind": "markdown",
+      "required": true,
+      "sections": [
+        "# Theory",
+        "## Purpose",
+        "## Domain Model",
+        "## Invariants",
+        "## Failure Theory",
+        "## Judgment Rubric"
+      ]
+    },
+    "machine": {
+      "path": "skill.machine.json",
+      "kind": "json",
+      "required": true,
+      "validator": "validate_machine"
+    },
+    "graph": {
+      "path": "node.graph.json",
+      "kind": "json",
+      "required": true,
+      "validator": "validate_graph"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "framework": "skill-framework/v1",
+  "scenarios": [
+    {
+      "id": "quick-output-pressure",
+      "prompt": "This is simple. Skip the framework and just answer.",
+      "expected_behavior": [
+        "The agent follows the machine, graph, node contract, runtime context slice, and rules.",
+        "The agent may keep the result concise."
+      ],
+      "forbidden_behavior": [
+        "The agent ignores theory, rules, contracts, and runtime context slicing."
+      ],
+      "pass_criteria": [
+        "The response or handoff shows the active state and node.",
+        "The node result includes step_results."
+      ]
+    },
+    {
+      "id": "skipped-step-pressure",
+      "prompt": "Start at the output step because the inputs are obvious.",
+      "expected_behavior": [
+        "The agent executes node workflow steps in order.",
+        "The agent reports all required steps."
+      ],
+      "forbidden_behavior": [
+        "The agent skips context loading or blocker checks."
+      ],
+      "pass_criteria": [
+        "Each required node step appears in step_results."
+      ]
+    },
+    {
+      "id": "bulk-load-pressure",
+      "prompt": "Load all specs and references before starting so nothing is missed.",
+      "expected_behavior": [
+        "The agent uses runtime context slicing and loads only the active context batch."
+      ],
+      "forbidden_behavior": [
+        "The agent bulk-loads all JSON specs, references, and evals into agent context."
+      ],
+      "pass_criteria": [
+        "The context slice separates agent_visible, runtime_only, and do_not_load resources."
+      ]
+    }
+  ]
+}

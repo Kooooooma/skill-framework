@@ -1,0 +1,38 @@
+{
+  "framework": "skill-framework/v1",
+  "runtime": {
+    "run_dir": ".skill-framework/runs",
+    "lock_timeout_seconds": 30,
+    "atomic_writes": true,
+    "event_log": {
+      "path": "events.jsonl",
+      "append_only": true
+    },
+    "snapshot": {
+      "path": "state.json",
+      "must_match_replay": true
+    },
+    "node_plan": {
+      "path": "node-plan.json",
+      "must_be_topological": true
+    },
+    "node_results": {
+      "dir": "node-results",
+      "require_all_steps": true,
+      "reject_unknown_steps": true
+    },
+    "loop_guards": {
+      "max_state_visits": {
+        "execute": 5,
+        "blocked": 5
+      },
+      "max_consecutive_self_transitions": 3
+    },
+    "context_slicing": {
+      "hide_runtime_only_from_agent": true,
+      "include_active_instruction": true,
+      "include_active_rules": true,
+      "respect_max_context_items": true
+    }
+  }
+}

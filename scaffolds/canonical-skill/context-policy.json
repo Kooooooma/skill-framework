@@ -1,0 +1,131 @@
+{
+  "framework": "skill-framework/v1",
+  "context_policy": {
+    "forbidden_bulk_load": true,
+    "max_context_items": 12,
+    "always_load": [
+      {
+        "path": "theory.md",
+        "resource_type": "reference",
+        "audience": "agent_visible",
+        "reason": "Theory guides every state and node."
+      },
+      {
+        "path": "rules/global.json",
+        "resource_type": "rule",
+        "audience": "both",
+        "reason": "Global rules constrain every execution step."
+      }
+    ],
+    "on_state": {
+      "execute": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/execute",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active topological plan."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "State-specific constraints apply while executing."
+        }
+      ],
+      "blocked": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to decide whether resolution is legal."
+        }
+      ]
+    },
+    "on_node": {
+      "main": [
+        {
+          "path": "contracts/nodes.json#/nodes/main",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "The executing agent/model needs only the active node contract, not all contracts."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "The executing agent/model must return a result that runtime can validate."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Node-specific constraints apply during main execution."
+        }
+      ]
+    },
+    "on_step": {
+      "load_required_context": [
+        {
+          "path": "context-policy.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute this context slice."
+        }
+      ],
+      "validate_and_handoff": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "The final step must satisfy handoff requirements."
+        },
+        {
+          "path": "rules/step/validate-and-handoff.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Step-specific validation rules apply at handoff."
+        }
+      ]
+    },
+    "on_failure": {
+      "node_result_rejected": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "A rejected result should be repaired against the result contract."
+        }
+      ]
+    },
+    "on_validation": {
+      "node_result": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "runtime_only",
+          "reason": "Runtime validates node result shape deterministically."
+        }
+      ]
+    },
+    "never_load_unless_requested": [
+      {
+        "path": "evals/pressure-scenarios.md",
+        "resource_type": "eval",
+        "audience": "agent_visible",
+        "reason": "Evals are for testing, not normal execution."
+      },
+      {
+        "path": "evals/expected-behaviors.json",
+        "resource_type": "eval",
+        "audience": "runtime_only",
+        "reason": "Expected behavior specs are loaded only by eval commands."
+      }
+    ]
+  }
+}

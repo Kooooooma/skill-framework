@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Runtime Event",
+  "type": "object",
+  "required": ["event_id", "timestamp", "type", "from_state"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "type": {
+      "enum": ["run_initialized", "transition", "node_result_recorded", "node_result_rejected", "context_slice_computed", "replay_validated", "runtime_blocked"]
+    },
+    "from_state": { "type": "string" },
+    "to_state": { "type": "string" },
+    "transition_event": { "type": "string" },
+    "node": { "type": "string" },
+    "status": { "type": "string" },
+    "details": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

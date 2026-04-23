@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rule Contract",
+  "type": "object",
+  "required": ["framework", "rules"],
+  "properties": {
+    "framework": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "scope", "priority", "statement"],
+        "properties": {
+          "id": { "type": "string" },
+          "scope": {
+            "enum": ["global", "machine", "state", "node", "step"]
+          },
+          "applies_to": { "type": "string" },
+          "priority": { "type": "integer", "minimum": 1 },
+          "statement": { "type": "string" },
+          "forbidden": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

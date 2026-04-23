@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Runtime State",
+  "type": "object",
+  "required": ["framework", "run_id", "skill_path", "current_state", "status", "state_visits", "created_at", "updated_at"],
+  "properties": {
+    "framework": { "type": "string" },
+    "run_id": { "type": "string" },
+    "skill_path": { "type": "string" },
+    "current_state": { "type": "string" },
+    "status": { "enum": ["running", "blocked", "done", "invalid"] },
+    "state_visits": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "last_event_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" }
+  },
+  "additionalProperties": true
+}

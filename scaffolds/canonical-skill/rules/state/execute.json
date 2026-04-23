@@ -1,0 +1,15 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "execute-state-uses-active-graph",
+      "scope": "state",
+      "applies_to": "execute",
+      "priority": 10,
+      "statement": "In execute state, use only the active graph plan produced by the runtime.",
+      "forbidden": [
+        "Choosing node order from prose instead of the runtime topological plan."
+      ]
+    }
+  ]
+}

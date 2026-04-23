@@ -1,0 +1,34 @@
+{
+  "node": "main",
+  "status": "success",
+  "outputs": {
+    "node_result": "completed"
+  },
+  "blockers": [],
+  "validation_notes": [
+    "All required workflow steps were reported."
+  ],
+  "recommended_transition": "success",
+  "step_results": [
+    {
+      "step": 1,
+      "name": "load_required_context",
+      "status": "completed"
+    },
+    {
+      "step": 2,
+      "name": "check_blockers",
+      "status": "completed"
+    },
+    {
+      "step": 3,
+      "name": "execute_task",
+      "status": "completed"
+    },
+    {
+      "step": 4,
+      "name": "validate_and_handoff",
+      "status": "completed"
+    }
+  ]
+}

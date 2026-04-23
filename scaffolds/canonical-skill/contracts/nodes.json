@@ -1,0 +1,69 @@
+{
+  "framework": "skill-framework/v1",
+  "nodes": {
+    "main": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Execute the primary skill behavior while preserving theory, rules, runtime state, and contracts.",
+      "instruction": "Handle the user's request only inside the active state and node. Follow the numbered workflow steps in order, report blockers instead of bypassing rules, and return a node result that includes every required step.",
+      "inputs": [
+        "user_request",
+        "theory.md",
+        "rules/global.json"
+      ],
+      "outputs": [
+        "node_result"
+      ],
+      "allowed_reads": [
+        "theory.md",
+        "contracts/nodes.json#/nodes/main",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json",
+        "references/*"
+      ],
+      "allowed_writes": [
+        "node_result"
+      ],
+      "rules": [
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json"
+      ],
+      "validators": [
+        "contracts/node-result.json"
+      ],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Use the runtime context slice to load only the theory, rules, contracts, and references required for this state, node, and step.",
+          "done_when": "The current state, node, required inputs, active instruction, active rules, and context slice are explicit.",
+          "agent_prompt_hint": "Do not read every JSON file. Use only the resources returned in the current context slice."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check required inputs, stop conditions, runtime guards, and validation prerequisites before producing output.",
+          "stop_if": "A required input, gate, runtime guard, or validator is missing or failed.",
+          "done_when": "Blocker status is explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Perform the user-requested work within the active node contract and applicable rules.",
+          "done_when": "The requested output is produced or a blocker is reported."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Validate the output shape and return a node result with one step_results entry for every workflow step.",
+          "done_when": "The node result includes status, outputs, blockers, validation notes, recommended_transition, and complete step_results.",
+          "agent_prompt_hint": "If any step could not be completed, report it as blocked instead of omitting it."
+        }
+      ]
+    }
+  }
+}

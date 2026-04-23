@@ -1,0 +1,47 @@
+framework: skill-framework/v1
+
+entities:
+  skill:
+    meaning: "A reusable workflow program for model-driven agents with theory, lifecycle, graph, contracts, rules, context policy, tools, and evals."
+  theory:
+    meaning: "The domain model, purpose, invariants, failure theory, and judgment rubric that explain why the skill exists."
+  invariant:
+    meaning: "A non-overridable constraint that must survive all state, node, step, and reference guidance."
+  machine:
+    meaning: "The top-level state machine controlling lifecycle, gates, recovery, retries, blocked states, and terminal states."
+  state:
+    meaning: "A lifecycle phase that may contain a node DAG and transition rules."
+  node_graph:
+    meaning: "A DAG of nodes inside a state, connected by depends_on edges."
+  node:
+    meaning: "The smallest agent, subagent, or deterministic execution unit in the graph."
+  step:
+    meaning: "A numbered operation inside a node. Steps are executed sequentially."
+  rule:
+    meaning: "A scoped constraint. Rules are not background reference material."
+  context_policy:
+    meaning: "The progressive loading plan for rules, references, artifacts, scripts, and contracts."
+  artifact:
+    meaning: "A durable output or input file governed by an artifact contract."
+  contract:
+    meaning: "A typed interface or structural promise that can be validated."
+  validator:
+    meaning: "A deterministic or rubric-based check for machine, graph, node, artifact, context, or eval correctness."
+  eval:
+    meaning: "A pressure scenario with expected and forbidden behavior."
+  recovery_event:
+    meaning: "A recorded fact that allows the workflow to resume safely after interruption or failure."
+  handoff:
+    meaning: "A structured result passed from one node, state, or agent role to another."
+
+relations:
+  skill_has_theory: "skill -> theory"
+  skill_has_machine: "skill -> machine"
+  state_contains_graph: "state -> node_graph"
+  graph_contains_nodes: "node_graph -> node"
+  node_depends_on_node: "node -> node"
+  node_contains_steps: "node -> step"
+  rule_scopes_execution: "rule -> global | state | node | step"
+  context_policy_loads_resource: "context_policy -> rule | reference | artifact | script | contract"
+  artifact_satisfies_contract: "artifact -> contract"
+  eval_tests_behavior: "eval -> expected_behavior | forbidden_behavior"

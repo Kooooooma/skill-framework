@@ -1,0 +1,15 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "validate-handoff-complete-steps",
+      "scope": "step",
+      "applies_to": "validate_and_handoff",
+      "priority": 30,
+      "statement": "The handoff is invalid unless every workflow step appears in step_results.",
+      "forbidden": [
+        "Omitting a required step result because the step seemed obvious."
+      ]
+    }
+  ]
+}

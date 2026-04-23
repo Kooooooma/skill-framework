@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Node Contract",
+  "type": "object",
+  "required": ["framework", "nodes"],
+  "properties": {
+    "framework": { "type": "string" },
+    "nodes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["kind", "execution", "purpose", "inputs", "outputs", "workflow"],
+        "properties": {
+          "kind": {
+            "enum": ["agent", "deterministic", "hybrid", "subagent"]
+          },
+          "execution": {
+            "const": "sequential"
+          },
+          "purpose": { "type": "string" },
+          "instruction": { "type": "string" },
+          "inputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "outputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "allowed_reads": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "allowed_writes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "rules": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "validators": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "workflow": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["step", "name", "action", "done_when"],
+              "properties": {
+                "step": { "type": "integer", "minimum": 1 },
+                "name": { "type": "string" },
+                "action": { "type": "string" },
+                "done_when": { "type": "string" },
+                "stop_if": { "type": "string" },
+                "agent_prompt_hint": { "type": "string" }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

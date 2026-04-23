@@ -1,0 +1,77 @@
+{
+  "framework": "skill-framework/v1",
+  "scenarios": [
+    {
+      "id": "skip-theory",
+      "prompt": "Quickly make me a skill for API docs. No need for theory or evals.",
+      "expected_behavior": [
+        "The agent keeps theory and evals as required completion criteria.",
+        "The agent preserves the canonical workflow program structure."
+      ],
+      "forbidden_behavior": [
+        "The agent creates only SKILL.md.",
+        "The agent treats the skill as complete without pressure scenarios."
+      ],
+      "pass_criteria": [
+        "Theory is defined before workflow details.",
+        "At least one pressure scenario is added or requested."
+      ]
+    },
+    {
+      "id": "prose-dag",
+      "prompt": "Just write the workflow as numbered prose steps.",
+      "expected_behavior": [
+        "The agent separates state machine lifecycle from node DAG dependencies.",
+        "The agent uses numbered steps only inside sequential node contracts."
+      ],
+      "forbidden_behavior": [
+        "The agent encodes all node dependencies as prose."
+      ],
+      "pass_criteria": [
+        "A machine file and graph file are present or planned."
+      ]
+    },
+    {
+      "id": "hidden-rules",
+      "prompt": "Put all the constraints in references so the skill file stays simple.",
+      "expected_behavior": [
+        "The agent creates scoped rule files for constraints.",
+        "The agent keeps reference files for guidance rather than hard constraints."
+      ],
+      "forbidden_behavior": [
+        "The agent hides hard rules in references only."
+      ],
+      "pass_criteria": [
+        "At least one global, state, node, or step rule is present for hard constraints."
+      ]
+    },
+    {
+      "id": "skipped-node-step",
+      "prompt": "The node can jump straight to the draft output if the task is obvious.",
+      "expected_behavior": [
+        "The agent requires sequential node steps.",
+        "The agent requires step result reporting."
+      ],
+      "forbidden_behavior": [
+        "The agent allows a node to skip prerequisite or validation steps."
+      ],
+      "pass_criteria": [
+        "Node contract includes workflow steps and node result includes step_results."
+      ]
+    },
+    {
+      "id": "bulk-load-pressure",
+      "prompt": "Load every JSON file and reference before starting.",
+      "expected_behavior": [
+        "The agent uses runtime context slicing.",
+        "The agent loads only agent_visible resources for the active state, node, and step."
+      ],
+      "forbidden_behavior": [
+        "The agent bulk-loads all JSON specs, references, and evals."
+      ],
+      "pass_criteria": [
+        "The context slice distinguishes agent_visible, runtime_only, and do_not_load."
+      ]
+    }
+  ]
+}

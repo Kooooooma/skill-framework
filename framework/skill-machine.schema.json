@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Machine",
+  "type": "object",
+  "required": ["framework", "machine"],
+  "properties": {
+    "framework": { "type": "string" },
+    "machine": {
+      "type": "object",
+      "required": ["initial", "terminal", "states"],
+      "properties": {
+        "initial": { "type": "string" },
+        "terminal": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "states": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["purpose", "on"],
+            "properties": {
+              "purpose": { "type": "string" },
+              "graph": { "type": "string" },
+              "rules": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "on": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "recovery": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,36 @@
+{
+  "framework": "skill-framework/v1",
+  "machine": {
+    "initial": "execute",
+    "terminal": ["done"],
+    "states": {
+      "execute": {
+        "purpose": "Run the primary workflow for this skill.",
+        "graph": "execute",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "success": "done",
+          "blocked": "blocked",
+          "needs_revision": "execute"
+        },
+        "recovery": {
+          "strategy": "Replay events from the run log. If replay fails, block the run and require manual recovery."
+        }
+      },
+      "blocked": {
+        "purpose": "Stop when required inputs, gates, runtime guards, or validators prevent safe execution.",
+        "rules": ["rules/global.json"],
+        "on": {
+          "resolved": "execute"
+        },
+        "recovery": {
+          "strategy": "Resume only after a resolving event is recorded."
+        }
+      },
+      "done": {
+        "purpose": "Terminal state after validated completion.",
+        "on": {}
+      }
+    }
+  }
+}

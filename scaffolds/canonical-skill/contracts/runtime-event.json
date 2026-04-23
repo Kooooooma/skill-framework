@@ -1,0 +1,20 @@
+{
+  "framework": "skill-framework/v1",
+  "runtime_event": {
+    "required_fields": [
+      "event_id",
+      "timestamp",
+      "type",
+      "from_state"
+    ],
+    "type_values": [
+      "run_initialized",
+      "transition",
+      "node_result_recorded",
+      "node_result_rejected",
+      "context_slice_computed",
+      "replay_validated",
+      "runtime_blocked"
+    ]
+  }
+}

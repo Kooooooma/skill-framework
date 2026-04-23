@@ -1,0 +1,15 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "main-node-active-instruction",
+      "scope": "node",
+      "applies_to": "main",
+      "priority": 20,
+      "statement": "Follow the active instruction and the current step action from the node contract.",
+      "forbidden": [
+        "Replacing the node contract with an unrelated strategy."
+      ]
+    }
+  ]
+}

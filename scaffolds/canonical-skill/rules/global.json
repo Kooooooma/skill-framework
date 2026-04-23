@@ -1,0 +1,43 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "preserve-canonical-structure",
+      "scope": "global",
+      "priority": 1,
+      "statement": "Keep this skill inside the canonical workflow program structure.",
+      "forbidden": [
+        "Removing machine, graph, contracts, context policy, rules, runtime config, or evals because the current workflow has few states or nodes."
+      ]
+    },
+    {
+      "id": "execute-node-steps-sequentially",
+      "scope": "node",
+      "applies_to": "*",
+      "priority": 2,
+      "statement": "Execute each node's workflow steps in ascending step order.",
+      "forbidden": [
+        "Jumping directly to output before loading context and checking blockers."
+      ]
+    },
+    {
+      "id": "report-step-results",
+      "scope": "node",
+      "applies_to": "*",
+      "priority": 3,
+      "statement": "Return node results with one step_results entry for every node workflow step.",
+      "forbidden": [
+        "Returning free-form prose without step status."
+      ]
+    },
+    {
+      "id": "runtime-slices-context",
+      "scope": "global",
+      "priority": 4,
+      "statement": "Let the runtime compute context slices; do not load all JSON specs into agent context by default.",
+      "forbidden": [
+        "Bulk-loading every machine, graph, contract, rule, reference, and eval file for normal node execution."
+      ]
+    }
+  ]
+}

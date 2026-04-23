@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Node Graph",
+  "type": "object",
+  "required": ["framework", "graphs"],
+  "properties": {
+    "framework": { "type": "string" },
+    "graphs": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["execution", "nodes"],
+        "properties": {
+          "execution": {
+            "type": "object",
+            "required": ["mode"],
+            "properties": {
+              "mode": {
+                "enum": ["strict_serial", "topological", "parallel"]
+              },
+              "parallel_policy": {
+                "enum": ["none", "conservative", "aggressive"]
+              }
+            },
+            "additionalProperties": true
+          },
+          "nodes": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "object",
+              "required": ["contract"],
+              "properties": {
+                "contract": { "type": "string" },
+                "depends_on": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "writes": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "join": {
+                  "enum": ["all", "any"]
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

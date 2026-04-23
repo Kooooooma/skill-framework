@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Artifact Contract",
+  "type": "object",
+  "required": ["framework", "artifacts"],
+  "properties": {
+    "framework": { "type": "string" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["path", "kind", "required"],
+        "properties": {
+          "path": { "type": "string" },
+          "kind": {
+            "enum": ["markdown", "json", "yaml", "code", "asset", "directory", "text"]
+          },
+          "required": { "type": "boolean" },
+          "sections": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "schema": { "type": "string" },
+          "validator": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

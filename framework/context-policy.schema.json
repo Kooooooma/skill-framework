@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Context Policy",
+  "type": "object",
+  "required": ["framework", "context_policy"],
+  "properties": {
+    "framework": { "type": "string" },
+    "context_policy": {
+      "type": "object",
+      "properties": {
+        "forbidden_bulk_load": { "type": "boolean" },
+        "max_context_items": { "type": "integer", "minimum": 1 },
+        "always_load": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/resource" }
+        },
+        "on_state": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+          }
+        },
+        "on_node": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+          }
+        },
+        "on_step": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+          }
+        },
+        "on_failure": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+          }
+        },
+        "on_validation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+          }
+        },
+        "never_load_unless_requested": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/resource" }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "resource": {
+      "type": "object",
+      "required": ["path", "resource_type", "audience"],
+      "properties": {
+        "path": { "type": "string" },
+        "resource_type": {
+          "enum": ["rule", "contract", "reference", "artifact", "script", "runtime_spec", "eval"]
+        },
+        "audience": {
+          "enum": ["runtime_only", "agent_visible", "both"]
+        },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
