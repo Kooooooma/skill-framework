@@ -267,7 +267,19 @@ def library_candidates(script_path: Path, relpath: str) -> Path:
         candidate = root / relpath
         if candidate.exists():
             return candidate
-    raise SystemExit(f"Missing required browser dependency: {relpath}")
+    raise SystemExit(
+        "\n".join(
+            [
+                f"Missing required browser dependency: {relpath}",
+                "The HTML renderer requires these npm packages in a reachable node_modules tree:",
+                "- cytoscape",
+                "- cytoscape-elk",
+                "- elkjs",
+                "Install them from the repository root with:",
+                "npm install",
+            ]
+        )
+    )
 
 
 def inline_script(path: Path) -> str:

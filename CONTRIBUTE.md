@@ -2,11 +2,11 @@
 
 This document explains what each `skill-framework` file is for, what the important fields mean, and how the files collaborate so future contributors can extend the framework without weakening its workflow-program model.
 
-<iframe src="assets/skill-framework-flow.html" title="Skill Framework Flow" style="width:100%;height:720px;border:2px solid #79747E;border-radius:24px;background:#FFFBFE;"></iframe>
+![Skill Framework Flow](assets/skill-framework-flow.png)
 
 [Open the standalone HTML diagram](assets/skill-framework-flow.html)
 
-The diagram above is generated from `skill.machine.json`, `node.graph.json`, and `contracts/nodes.json` through the framework's own HTML rendering path. Read it first to get the lifecycle and branch structure, then use the sections below for the detailed file-by-file semantics. Execution-node workflow steps are rendered directly as graph nodes, and when `DESIGN.md` is present the renderer reuses its design-token colors as the page theme.
+The screenshot above is the static preview for GitHub-style document rendering. Open the standalone HTML diagram to use the interactive version with pan, zoom, fit/reset controls, and click-to-inspect details. The diagram is generated from `skill.machine.json`, `node.graph.json`, and `contracts/nodes.json` through the framework's own HTML rendering path. Read it first to get the lifecycle and branch structure, then use the sections below for the detailed file-by-file semantics. Execution-node workflow steps are rendered directly as graph nodes, and when `DESIGN.md` is present the renderer reuses its design-token colors as the page theme.
 
 ## Mental Model
 
@@ -72,6 +72,68 @@ Do not remove it casually across the repo unless you are intentionally changing 
 - `references/testing-method.md`: How to think about evals and testing.
 - `references/anti-patterns.md`: Common failure patterns the framework exists to prevent.
 - `references/examples.md`: Representative structural patterns.
+
+## Markdown Usage Map
+
+This section explains which Markdown files are used by the running skill, which are read by scripts, which are required only as framework assets, and which are mainly for contributors.
+
+Status meanings:
+
+- `runtime-loaded`: The file can enter normal skill execution context through `context-policy.json`.
+- `script-read`: A framework script reads the file directly.
+- `validator-required`: Validators require the file to exist or to contain specific sections.
+- `human-only`: The file exists mainly for maintainers, contributors, or readers rather than normal skill execution.
+
+### Root markdown files
+
+- `SKILL.md`: `runtime-loaded`, `script-read`, `validator-required`
+  Used during request routing as public trigger guidance; read by the HTML renderer for summary fallback; validated for frontmatter and canonical sections.
+- `theory.md`: `runtime-loaded`, `script-read`, `validator-required`
+  Always loaded during execution; read by the HTML renderer for summary fallback; validated for required theory sections.
+- `README.md`: `human-only`
+  General framework documentation for people; not part of normal skill execution context.
+- `CONTRIBUTE.md`: `human-only`
+  Contributor guide for maintainers; not part of normal skill execution context.
+
+### Framework and reference markdown files
+
+- `framework/philosophy.md`: `validator-required`, `human-only`
+  Framework design background; required as part of the framework asset surface but not loaded in normal execution.
+- `references/authoring-principles.md`: `runtime-loaded`, `validator-required`
+  Loaded in the authoring branch to shape scaffold and upgrade behavior.
+- `references/examples.md`: `runtime-loaded`, `validator-required`
+  Loaded in the authoring branch to provide structural examples.
+- `references/testing-method.md`: `runtime-loaded`, `validator-required`
+  Loaded in the validation branch to guide eval and testing behavior.
+- `references/anti-patterns.md`: `validator-required`, `human-only`
+  Maintainer-facing reference on what the framework tries to prevent; currently not loaded during normal execution.
+
+### Eval markdown files
+
+- `evals/pressure-scenarios.md`: `script-read`, `validator-required`
+  Used by eval validation and eval execution to confirm scenario coverage against `evals/expected-behaviors.json`; not loaded in normal execution unless explicitly requested.
+- `evals/framework-pressure-scenarios.md`: `validator-required`, `human-only`
+  Extra framework-level pressure-scenario material kept as part of the framework surface; currently not read by the normal eval runner.
+
+### Scaffold markdown files
+
+- `scaffolds/canonical-skill/SKILL.md`: `validator-required`, `human-only`
+  Template used by `scripts/init_skill.py` when creating a new skill.
+- `scaffolds/canonical-skill/theory.md`: `validator-required`, `human-only`
+  Template used by `scripts/init_skill.py` when creating a new skill.
+- `scaffolds/canonical-skill/evals/pressure-scenarios.md`: `validator-required`, `human-only`
+  Template used by `scripts/init_skill.py` when creating a new skill.
+
+### When these files are used
+
+- During normal skill execution:
+  `theory.md` is always loaded; `SKILL.md`, `references/authoring-principles.md`, `references/examples.md`, and `references/testing-method.md` are loaded only in the states declared by `context-policy.json`.
+- During rendering:
+  `render_skill_html.py` reads `SKILL.md` and `theory.md` to derive a default skill summary when needed.
+- During validation and eval checks:
+  `validate_skill.py`, `validate_contracts.py`, and `run_skill_evals.py` require specific markdown files to exist and, in some cases, contain specific headings.
+- During skill creation:
+  `init_skill.py` copies the scaffold markdown files into the newly created skill.
 
 ### Scripts
 

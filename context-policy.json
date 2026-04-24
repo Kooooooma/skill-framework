@@ -38,12 +38,6 @@
           "reason": "Routing decisions should align with the skill's public trigger surface."
         },
         {
-          "path": "README.md",
-          "resource_type": "reference",
-          "audience": "agent_visible",
-          "reason": "The README summarizes the framework's capability surface."
-        },
-        {
           "path": "rules/state/execute.json",
           "resource_type": "rule",
           "audience": "both",
@@ -152,10 +146,10 @@
           "reason": "Runtime uses it to compute the active graph."
         },
         {
-          "path": "README.md",
+          "path": "SKILL.md",
           "resource_type": "reference",
           "audience": "agent_visible",
-          "reason": "Runtime requests should align with the documented runtime commands."
+          "reason": "Runtime requests should align with the skill's runtime-facing entrypoints."
         },
         {
           "path": "scripts/skill_runtime.py",
@@ -196,10 +190,10 @@
           "reason": "Runtime uses it to compute the active graph."
         },
         {
-          "path": "README.md",
+          "path": "SKILL.md",
           "resource_type": "reference",
           "audience": "agent_visible",
-          "reason": "Diagram requests follow the documented standalone HTML flow."
+          "reason": "Diagram requests should align with the skill's public diagram-rendering entrypoints."
         },
         {
           "path": "scripts/render_skill_html.py",

@@ -122,6 +122,8 @@ Notes:
 - The renderer reads `skill.machine.json`, `node.graph.json`, and `contracts/nodes.json` directly
 - The page is emitted as a single self-contained HTML file
 - When the target skill has a `DESIGN.md`, the renderer reuses its design-token colors as the diagram theme when possible
+- The renderer expects `cytoscape`, `cytoscape-elk`, and `elkjs` to be installed in a reachable `node_modules` tree
+- If they are missing, the renderer exits with an install hint; from this repo root the fix is `npm install`
 
 ## Runtime
 

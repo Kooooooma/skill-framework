@@ -11,7 +11,6 @@
       "allowed_reads": [
         "theory.md",
         "SKILL.md",
-        "README.md",
         "contracts/nodes.json#/nodes/classify_request",
         "contracts/node-result.json",
         "rules/global.json",
@@ -59,7 +58,7 @@
       "outputs": ["node_result"],
       "allowed_reads": [
         "theory.md",
-        "README.md",
+        "SKILL.md",
         "references/authoring-principles.md",
         "references/examples.md",
         "contracts/nodes.json#/nodes/author_main",
@@ -110,7 +109,7 @@
       "outputs": ["node_result"],
       "allowed_reads": [
         "theory.md",
-        "README.md",
+        "SKILL.md",
         "references/testing-method.md",
         "contracts/nodes.json#/nodes/validate_main",
         "contracts/node-result.json",
@@ -163,7 +162,7 @@
       "outputs": ["node_result"],
       "allowed_reads": [
         "theory.md",
-        "README.md",
+        "SKILL.md",
         "contracts/runtime-state.json",
         "contracts/runtime-event.json",
         "contracts/nodes.json#/nodes/runtime_main",
@@ -214,7 +213,7 @@
       "outputs": ["node_result", "diagram_html"],
       "allowed_reads": [
         "theory.md",
-        "README.md",
+        "SKILL.md",
         "contracts/nodes.json#/nodes/render_html",
         "contracts/node-result.json",
         "rules/global.json",
