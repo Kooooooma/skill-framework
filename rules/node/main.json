@@ -1,0 +1,19 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "node-follow-active-contract",
+      "scope": "node",
+      "applies_to": "*",
+      "priority": 20,
+      "statement": "Follow the active node contract and numbered workflow steps for the current capability branch."
+    },
+    {
+      "id": "node-render-diagram-branch-is-independent",
+      "scope": "node",
+      "applies_to": "render_dot",
+      "priority": 21,
+      "statement": "Render-diagram nodes must operate independently of authoring, validation, and runtime branches."
+    }
+  ]
+}

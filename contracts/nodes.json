@@ -1,0 +1,259 @@
+{
+  "framework": "skill-framework/v1",
+  "nodes": {
+    "classify_request": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Classify the current request into the correct capability branch before any specialized work begins.",
+      "instruction": "Route requests explicitly. Treat ambiguous or underspecified requests as blockers instead of guessing between authoring, validation, runtime, and diagram rendering.",
+      "inputs": ["user_request"],
+      "outputs": ["node_result", "request_route"],
+      "allowed_reads": [
+        "theory.md",
+        "SKILL.md",
+        "README.md",
+        "contracts/nodes.json#/nodes/classify_request",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json"
+      ],
+      "allowed_writes": ["node_result", "request_route"],
+      "rules": ["rules/global.json", "rules/state/execute.json", "rules/node/main.json"],
+      "validators": ["contracts/node-result.json"],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Load only the routing context slice, including theory, entrypoint guidance, and the active routing contract.",
+          "done_when": "The skill's capability branches and routing contract are explicit."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check whether the request contains enough intent to distinguish authoring, validation, runtime, and whole-skill diagram rendering work.",
+          "stop_if": "The request remains too ambiguous to route safely.",
+          "done_when": "Routing blockers or a route-ready request are explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Classify the request as `author_requested`, `validate_requested`, `runtime_requested`, or `render_diagram_requested` based on the dominant user intent.",
+          "done_when": "The request route is explicit and maps to one machine transition."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Return a node result whose recommended transition matches the classified route or reports a blocker.",
+          "done_when": "The node result includes the route classification, blockers if any, and a legal recommended transition."
+        }
+      ]
+    },
+    "author_main": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Handle skill creation, upgrade, and evolution requests using the existing framework guidance and scaffold tooling.",
+      "instruction": "Preserve existing authoring behavior. Route to the scaffold or authoring references only when the request actually concerns skill creation or evolution.",
+      "inputs": ["user_request", "request_route"],
+      "outputs": ["node_result"],
+      "allowed_reads": [
+        "theory.md",
+        "README.md",
+        "references/authoring-principles.md",
+        "references/examples.md",
+        "contracts/nodes.json#/nodes/author_main",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json",
+        "scripts/init_skill.py"
+      ],
+      "allowed_writes": ["node_result"],
+      "rules": ["rules/global.json", "rules/state/execute.json", "rules/node/main.json"],
+      "validators": ["contracts/node-result.json"],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Load only the authoring context slice, including the framework's authoring references and scaffold script.",
+          "done_when": "The authoring guidance and tools are explicit."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check that the request is actually an authoring or evolution request and that the target skill context is explicit enough to proceed.",
+          "stop_if": "The request was misrouted or the authoring target is too underspecified.",
+          "done_when": "Authoring blockers or ready-to-execute authoring scope are explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Carry out the existing skill-framework authoring behavior without changing the validation, runtime, or rendering branches.",
+          "done_when": "The requested authoring output is produced or a blocker is reported."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Return a node result that preserves the existing authoring behavior while making blockers and outputs explicit.",
+          "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
+        }
+      ]
+    },
+    "validate_main": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Handle validation requests using the existing deterministic validator scripts.",
+      "instruction": "Use the focused validator scripts that match the request. Do not reinterpret validation requests as authoring or rendering work.",
+      "inputs": ["user_request", "request_route"],
+      "outputs": ["node_result"],
+      "allowed_reads": [
+        "theory.md",
+        "README.md",
+        "references/testing-method.md",
+        "contracts/nodes.json#/nodes/validate_main",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json",
+        "scripts/validate_skill.py",
+        "scripts/validate_machine.py",
+        "scripts/validate_contracts.py",
+        "scripts/run_skill_evals.py"
+      ],
+      "allowed_writes": ["node_result"],
+      "rules": ["rules/global.json", "rules/state/execute.json", "rules/node/main.json"],
+      "validators": ["contracts/node-result.json"],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Load only the validation context slice, including validation references and scripts.",
+          "done_when": "The validation tools and constraints are explicit."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check that the request is a validation request and that the validation target is explicit enough for script selection.",
+          "stop_if": "The request was misrouted or the validation target is too underspecified.",
+          "done_when": "Validation blockers or ready-to-execute validation scope are explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Carry out the existing skill-framework validation behavior with the matching validator scripts and checks.",
+          "done_when": "The requested validation output is produced or a blocker is reported."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Return a node result that makes the chosen validation path, outputs, and blockers explicit.",
+          "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
+        }
+      ]
+    },
+    "runtime_main": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Handle runtime-control requests using the existing skill runtime script and contracts.",
+      "instruction": "Use the runtime script for run initialization, planning, context slicing, replay, and validation operations. Do not collapse runtime work into authoring or validation behavior.",
+      "inputs": ["user_request", "request_route"],
+      "outputs": ["node_result"],
+      "allowed_reads": [
+        "theory.md",
+        "README.md",
+        "contracts/runtime-state.json",
+        "contracts/runtime-event.json",
+        "contracts/nodes.json#/nodes/runtime_main",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json",
+        "scripts/skill_runtime.py"
+      ],
+      "allowed_writes": ["node_result"],
+      "rules": ["rules/global.json", "rules/state/execute.json", "rules/node/main.json"],
+      "validators": ["contracts/node-result.json"],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Load only the runtime context slice, including runtime contracts and the runtime control script.",
+          "done_when": "The runtime tools and constraints are explicit."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check that the request is a runtime request and that the target skill or run identifiers are explicit enough for the intended runtime operation.",
+          "stop_if": "The request was misrouted or the runtime target is too underspecified.",
+          "done_when": "Runtime blockers or ready-to-execute runtime scope are explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Carry out the existing skill-framework runtime behavior using the runtime script and current contracts.",
+          "done_when": "The requested runtime output is produced or a blocker is reported."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Return a node result that makes the chosen runtime path, outputs, and blockers explicit.",
+          "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
+        }
+      ]
+    },
+    "render_html": {
+      "kind": "agent",
+      "execution": "sequential",
+      "purpose": "Generate a standalone whole-skill HTML diagram artifact for a target framework-compliant skill.",
+      "instruction": "Render the final HTML directly from the target skill JSON specs. Do not fall back to DOT or SVG.",
+      "inputs": ["user_request", "request_route", "target_skill"],
+      "outputs": ["node_result", "diagram_html"],
+      "allowed_reads": [
+        "theory.md",
+        "README.md",
+        "contracts/nodes.json#/nodes/render_html",
+        "contracts/node-result.json",
+        "rules/global.json",
+        "rules/state/execute.json",
+        "rules/node/main.json",
+        "rules/step/validate-and-handoff.json",
+        "scripts/render_skill_html.py",
+        "scripts/validate_machine.py"
+      ],
+      "allowed_writes": ["node_result", "diagram_html"],
+      "rules": ["rules/global.json", "rules/state/execute.json", "rules/node/main.json"],
+      "validators": ["contracts/node-result.json"],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "load_required_context",
+          "action": "Load only the diagram-rendering context slice, including the HTML renderer, theme guidance, and any validation guidance needed before rendering.",
+          "done_when": "The HTML-rendering tools and constraints are explicit."
+        },
+        {
+          "step": 2,
+          "name": "check_blockers",
+          "action": "Check that the request is a whole-skill diagram request, that the target skill path is explicit, and that the target has the machine, graph, and node-contract files needed for HTML rendering.",
+          "stop_if": "The request was misrouted, the target skill is missing, or the target skill cannot supply the required machine, graph, or node-contract inputs.",
+          "done_when": "HTML-render blockers or a render-ready target are explicit."
+        },
+        {
+          "step": 3,
+          "name": "execute_task",
+          "action": "Run the whole-skill HTML renderer to produce the final standalone diagram artifact directly from the target skill JSON specifications.",
+          "done_when": "An HTML artifact path or HTML output is explicit."
+        },
+        {
+          "step": 4,
+          "name": "validate_and_handoff",
+          "action": "Return a node result that records the final HTML artifact path, outputs, blockers, and complete step results.",
+          "done_when": "The node result includes the final HTML artifact and complete step results."
+        }
+      ]
+    }
+  }
+}

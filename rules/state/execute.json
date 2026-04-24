@@ -1,0 +1,19 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "state-route-request-uses-active-graph",
+      "scope": "state",
+      "applies_to": "route_request",
+      "priority": 10,
+      "statement": "In route_request state, use only the routing graph defined by the runtime."
+    },
+    {
+      "id": "state-specialized-branch-boundary",
+      "scope": "state",
+      "applies_to": "author",
+      "priority": 11,
+      "statement": "In author, validate, runtime, and render_diagram states, stay inside the active capability branch instead of reinterpreting the request into another branch."
+    }
+  ]
+}

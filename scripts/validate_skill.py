@@ -51,7 +51,7 @@ FRAMEWORK_REQUIRED = [
     "scripts/validate_skill.py",
     "scripts/validate_machine.py",
     "scripts/validate_contracts.py",
-    "scripts/render_skill_graph.py",
+    "scripts/render_skill_html.py",
     "scripts/run_skill_evals.py",
     "scripts/skill_runtime.py",
     "agents/metadata.json",
@@ -169,14 +169,27 @@ def check_json_syntax(root: Path, report: Report) -> None:
 def check_generated_sections(root: Path, report: Report) -> None:
     skill = root / "SKILL.md"
     theory = root / "theory.md"
+    artifacts_contract = root / "contracts" / "artifacts.json"
+    artifact_doc = load_json(artifacts_contract, report) if artifacts_contract.exists() else {}
+    artifacts = artifact_doc.get("artifacts", {}) if isinstance(artifact_doc, dict) else {}
+
+    skill_sections = artifacts.get("skill_entrypoint", {}).get(
+        "sections",
+        ["## Core Model", "## Execution Workflow", "## Invariants", "## Runtime", "## Completion Standard"],
+    )
+    theory_sections = artifacts.get("theory", {}).get(
+        "sections",
+        ["## Purpose", "## Domain Model", "## Invariants", "## Failure Theory", "## Judgment Rubric"],
+    )
+
     if skill.exists():
         text = read(skill)
-        for heading in ["## Core Model", "## Execution Workflow", "## Invariants", "## Runtime", "## Completion Standard"]:
+        for heading in skill_sections:
             if heading not in text:
                 report.error(f"SKILL.md missing section: {heading}")
     if theory.exists():
         text = read(theory)
-        for heading in ["## Purpose", "## Domain Model", "## Invariants", "## Failure Theory", "## Judgment Rubric"]:
+        for heading in theory_sections:
             if heading not in text:
                 report.error(f"theory.md missing section: {heading}")
 

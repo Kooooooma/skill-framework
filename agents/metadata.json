@@ -1,6 +1,6 @@
 {
   "display_name": "Skill Framework",
   "short_description": "Build workflow-program skills",
-  "default_prompt": "Use /skill-framework to create or upgrade an agent skill as a workflow program: define the theory and invariants first, model lifecycle with a state machine, model state-internal work as a DAG of nodes, make every node a sequential micro-workflow with numbered steps, separate rules from references, schedule progressive context loading through runtime context slicing, add deterministic validators and production runtime controls, and write pressure scenarios for expected and forbidden behavior before treating the skill as complete.",
+  "default_prompt": "Use /skill-framework to route requests into authoring, validation, runtime, or whole-skill diagram rendering work: define theory and invariants first, model lifecycle with a state machine, model state-internal work as a DAG of nodes, use deterministic validators and runtime controls when requested, and when asked for a skill flow diagram generate a standalone HTML artifact with render_skill_html.py directly from the skill JSON specs.",
   "allow_implicit_invocation": true
 }

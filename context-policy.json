@@ -1,0 +1,387 @@
+{
+  "framework": "skill-framework/v1",
+  "context_policy": {
+    "forbidden_bulk_load": true,
+    "max_context_items": 14,
+    "always_load": [
+      {
+        "path": "theory.md",
+        "resource_type": "reference",
+        "audience": "agent_visible",
+        "reason": "Theory defines the capability branches and the render-diagram invariant."
+      },
+      {
+        "path": "rules/global.json",
+        "resource_type": "rule",
+        "audience": "both",
+        "reason": "Global rules constrain all capability branches."
+      }
+    ],
+    "on_state": {
+      "route_request": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/route_request",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active graph."
+        },
+        {
+          "path": "SKILL.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Routing decisions should align with the skill's public trigger surface."
+        },
+        {
+          "path": "README.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "The README summarizes the framework's capability surface."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Routing obeys active state constraints."
+        }
+      ],
+      "author": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/author",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active graph."
+        },
+        {
+          "path": "references/authoring-principles.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Authoring requests follow the framework's authoring guidance."
+        },
+        {
+          "path": "references/examples.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Examples help choose the right workflow-program structure."
+        },
+        {
+          "path": "scripts/init_skill.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Authoring requests may need the scaffold script."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Authoring obeys active state constraints."
+        }
+      ],
+      "validate": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/validate",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active graph."
+        },
+        {
+          "path": "references/testing-method.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Validation requests should use the framework's testing approach."
+        },
+        {
+          "path": "scripts/validate_skill.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Validation requests may use the full skill validator."
+        },
+        {
+          "path": "scripts/validate_machine.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Validation requests may use focused machine validation."
+        },
+        {
+          "path": "scripts/validate_contracts.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Validation requests may use focused contract validation."
+        },
+        {
+          "path": "scripts/run_skill_evals.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Validation requests may use eval execution."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Validation obeys active state constraints."
+        }
+      ],
+      "runtime": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/runtime",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active graph."
+        },
+        {
+          "path": "README.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Runtime requests should align with the documented runtime commands."
+        },
+        {
+          "path": "scripts/skill_runtime.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Runtime requests rely on the skill runtime script."
+        },
+        {
+          "path": "contracts/runtime-state.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Runtime requests may need runtime-state constraints."
+        },
+        {
+          "path": "contracts/runtime-event.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Runtime requests may need runtime-event constraints."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Runtime operations obey active state constraints."
+        }
+      ],
+      "render_diagram": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to enforce legal transitions."
+        },
+        {
+          "path": "node.graph.json#/graphs/render_diagram",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute the active graph."
+        },
+        {
+          "path": "README.md",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "Diagram requests follow the documented standalone HTML flow."
+        },
+        {
+          "path": "scripts/render_skill_html.py",
+          "resource_type": "script",
+          "audience": "agent_visible",
+          "reason": "Whole-skill HTML rendering uses this script."
+        },
+        {
+          "path": "rules/state/execute.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Diagram rendering obeys active state constraints."
+        }
+      ],
+      "blocked": [
+        {
+          "path": "skill.machine.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to determine whether resolution is legal."
+        }
+      ]
+    },
+    "on_node": {
+      "classify_request": [
+        {
+          "path": "contracts/nodes.json#/nodes/classify_request",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Only the active routing node contract is needed."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Routing still returns a contract-bound node result."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Generic node constraints still apply."
+        }
+      ],
+      "author_main": [
+        {
+          "path": "contracts/nodes.json#/nodes/author_main",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Only the active authoring node contract is needed."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Authoring returns a contract-bound node result."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Generic node constraints still apply."
+        }
+      ],
+      "validate_main": [
+        {
+          "path": "contracts/nodes.json#/nodes/validate_main",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Only the active validation node contract is needed."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Validation returns a contract-bound node result."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Generic node constraints still apply."
+        }
+      ],
+      "runtime_main": [
+        {
+          "path": "contracts/nodes.json#/nodes/runtime_main",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Only the active runtime node contract is needed."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Runtime work returns a contract-bound node result."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Generic node constraints still apply."
+        }
+      ],
+      "render_html": [
+        {
+          "path": "contracts/nodes.json#/nodes/render_html",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "Only the active HTML-render node contract is needed."
+        },
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "HTML rendering returns a contract-bound node result."
+        },
+        {
+          "path": "rules/node/main.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Generic node constraints still apply."
+        }
+      ]
+    },
+    "on_step": {
+      "load_required_context": [
+        {
+          "path": "context-policy.json",
+          "resource_type": "runtime_spec",
+          "audience": "runtime_only",
+          "reason": "Runtime uses it to compute this context slice."
+        }
+      ],
+      "validate_and_handoff": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "The final step must satisfy handoff requirements."
+        },
+        {
+          "path": "rules/step/validate-and-handoff.json",
+          "resource_type": "rule",
+          "audience": "both",
+          "reason": "Step-specific validation rules apply at handoff."
+        }
+      ]
+    },
+    "on_failure": {
+      "node_result_rejected": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "both",
+          "reason": "A rejected result should be repaired against the node-result contract."
+        }
+      ]
+    },
+    "on_validation": {
+      "node_result": [
+        {
+          "path": "contracts/node-result.json",
+          "resource_type": "contract",
+          "audience": "runtime_only",
+          "reason": "Runtime validates node-result shape deterministically."
+        }
+      ]
+    },
+    "never_load_unless_requested": [
+      {
+        "path": "evals/pressure-scenarios.md",
+        "resource_type": "eval",
+        "audience": "agent_visible",
+        "reason": "Evals are for testing, not normal execution."
+      },
+      {
+        "path": "evals/expected-behaviors.json",
+        "resource_type": "eval",
+        "audience": "runtime_only",
+        "reason": "Expected behavior specs are loaded only by eval commands."
+      }
+    ]
+  }
+}

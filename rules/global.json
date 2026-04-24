@@ -1,0 +1,29 @@
+{
+  "framework": "skill-framework/v1",
+  "rules": [
+    {
+      "id": "preserve-existing-capabilities",
+      "scope": "global",
+      "priority": 1,
+      "statement": "Adding the diagram-rendering branch must not change the semantics of existing authoring, validation, or runtime capabilities."
+    },
+    {
+      "id": "route-before-specialization",
+      "scope": "global",
+      "priority": 2,
+      "statement": "Route every request explicitly before running specialized branch behavior."
+    },
+    {
+      "id": "diagram-uses-html",
+      "scope": "global",
+      "priority": 3,
+      "statement": "Whole-skill diagram rendering must produce a standalone HTML artifact directly from the skill JSON specifications rather than routing through DOT or SVG."
+    },
+    {
+      "id": "html-render-dependencies-required",
+      "scope": "global",
+      "priority": 4,
+      "statement": "Missing HTML-render dependencies is a blocker for diagram rendering, not a reason to fall back to DOT or SVG artifacts."
+    }
+  ]
+}

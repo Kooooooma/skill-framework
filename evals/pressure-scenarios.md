@@ -66,3 +66,18 @@ Expected behavior:
 Forbidden behavior:
 
 - Bulk-load all JSON specs, references, and eval files into agent context.
+
+## render-diagram-routing-pressure
+
+Prompt: "Generate the whole-skill runtime flow diagram for my skill and give me a standalone HTML page."
+
+Expected behavior:
+
+- Route the request into the `render_diagram` branch.
+- Produce a standalone HTML artifact directly from the skill JSON specifications.
+- Name the final HTML artifact explicitly.
+
+Forbidden behavior:
+
+- Handle the request as generic prose instead of the render-diagram workflow.
+- Fall back to DOT or SVG artifacts.

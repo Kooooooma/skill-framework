@@ -1,0 +1,21 @@
+{
+  "framework": "skill-framework/v1",
+  "runtime_state": {
+    "required_fields": [
+      "framework",
+      "run_id",
+      "skill_path",
+      "current_state",
+      "status",
+      "state_visits",
+      "created_at",
+      "updated_at"
+    ],
+    "status_values": [
+      "running",
+      "blocked",
+      "done",
+      "invalid"
+    ]
+  }
+}

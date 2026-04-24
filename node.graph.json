@@ -1,0 +1,75 @@
+{
+  "framework": "skill-framework/v1",
+  "graphs": {
+    "route_request": {
+      "execution": {
+        "mode": "strict_serial",
+        "parallel_policy": "none"
+      },
+      "nodes": {
+        "classify_request": {
+          "contract": "contracts/nodes.json#/nodes/classify_request",
+          "depends_on": [],
+          "writes": ["request_route"],
+          "join": "all"
+        }
+      }
+    },
+    "author": {
+      "execution": {
+        "mode": "strict_serial",
+        "parallel_policy": "none"
+      },
+      "nodes": {
+        "author_main": {
+          "contract": "contracts/nodes.json#/nodes/author_main",
+          "depends_on": [],
+          "writes": ["node_result"],
+          "join": "all"
+        }
+      }
+    },
+    "validate": {
+      "execution": {
+        "mode": "strict_serial",
+        "parallel_policy": "none"
+      },
+      "nodes": {
+        "validate_main": {
+          "contract": "contracts/nodes.json#/nodes/validate_main",
+          "depends_on": [],
+          "writes": ["node_result"],
+          "join": "all"
+        }
+      }
+    },
+    "runtime": {
+      "execution": {
+        "mode": "strict_serial",
+        "parallel_policy": "none"
+      },
+      "nodes": {
+        "runtime_main": {
+          "contract": "contracts/nodes.json#/nodes/runtime_main",
+          "depends_on": [],
+          "writes": ["node_result"],
+          "join": "all"
+        }
+      }
+    },
+    "render_diagram": {
+      "execution": {
+        "mode": "strict_serial",
+        "parallel_policy": "none"
+      },
+      "nodes": {
+        "render_html": {
+          "contract": "contracts/nodes.json#/nodes/render_html",
+          "depends_on": [],
+          "writes": ["node_result", "diagram_html"],
+          "join": "all"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "framework": "skill-framework/v1",
+  "machine": {
+    "initial": "route_request",
+    "terminal": ["done"],
+    "states": {
+      "route_request": {
+        "purpose": "Classify the current skill-framework request into authoring, validation, runtime, or diagram rendering work before running any specialized branch.",
+        "graph": "route_request",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "author_requested": "author",
+          "validate_requested": "validate",
+          "runtime_requested": "runtime",
+          "render_diagram_requested": "render_diagram",
+          "blocked": "blocked"
+        },
+        "recovery": {
+          "strategy": "Replay the current request summary and reroute only if the request meaning changed."
+        }
+      },
+      "author": {
+        "purpose": "Handle skill creation, upgrade, and evolution requests without changing the routing or rendering branches.",
+        "graph": "author",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "success": "done",
+          "blocked": "blocked",
+          "needs_revision": "author"
+        },
+        "recovery": {
+          "strategy": "Resume from the current authoring intent and continue using existing framework guidance and scripts."
+        }
+      },
+      "validate": {
+        "purpose": "Handle skill validation requests using the existing deterministic validator scripts.",
+        "graph": "validate",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "success": "done",
+          "blocked": "blocked",
+          "needs_revision": "validate"
+        },
+        "recovery": {
+          "strategy": "Resume from the validation target and continue with the matching validator scripts."
+        }
+      },
+      "runtime": {
+        "purpose": "Handle skill runtime control requests using the existing skill runtime script and contracts.",
+        "graph": "runtime",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "success": "done",
+          "blocked": "blocked",
+          "needs_revision": "runtime"
+        },
+        "recovery": {
+          "strategy": "Resume from the runtime operation and target run state without rerouting the request."
+        }
+      },
+      "render_diagram": {
+        "purpose": "Render a whole-skill flow diagram as a standalone HTML page generated directly from the skill JSON specs.",
+        "graph": "render_diagram",
+        "rules": ["rules/global.json", "rules/state/execute.json"],
+        "on": {
+          "success": "done",
+          "blocked": "blocked",
+          "needs_revision": "render_diagram"
+        },
+        "recovery": {
+          "strategy": "Resume from the target skill and latest accepted render inputs, then regenerate the HTML artifact if the request or theme changed."
+        }
+      },
+      "blocked": {
+        "purpose": "Stop when the request cannot be safely classified or completed because required inputs, scripts, or HTML-render dependencies are unavailable.",
+        "rules": ["rules/global.json"],
+        "on": {
+          "resolved": "route_request"
+        },
+        "recovery": {
+          "strategy": "Resume only after the missing input, script prerequisite, or environment blocker is resolved."
+        }
+      },
+      "done": {
+        "purpose": "Terminal state after the requested capability branch completes.",
+        "on": {}
+      }
+    }
+  }
+}

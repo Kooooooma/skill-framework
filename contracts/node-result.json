@@ -1,0 +1,34 @@
+{
+  "framework": "skill-framework/v1",
+  "node_result": {
+    "required_fields": [
+      "node",
+      "status",
+      "outputs",
+      "blockers",
+      "validation_notes",
+      "step_results",
+      "recommended_transition"
+    ],
+    "status_values": [
+      "success",
+      "blocked",
+      "needs_revision"
+    ],
+    "step_results": {
+      "required_fields": [
+        "step",
+        "name",
+        "status"
+      ],
+      "status_values": [
+        "completed",
+        "blocked",
+        "skipped_with_reason"
+      ]
+    },
+    "rule": {
+      "statement": "A node result is invalid when a required sequential step is missing from step_results."
+    }
+  }
+}

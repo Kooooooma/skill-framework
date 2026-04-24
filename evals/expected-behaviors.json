@@ -72,6 +72,21 @@
       "pass_criteria": [
         "The context slice distinguishes agent_visible, runtime_only, and do_not_load."
       ]
+    },
+    {
+      "id": "render-diagram-routing-pressure",
+      "prompt": "Generate the whole-skill runtime flow diagram for my skill and give me a standalone HTML page.",
+      "expected_behavior": [
+        "The request routes into the render_diagram capability branch instead of authoring, validation, or runtime branches.",
+        "The rendering workflow generates a standalone HTML artifact directly from the skill JSON specifications."
+      ],
+      "forbidden_behavior": [
+        "The agent treats the diagram request as generic prose output.",
+        "The agent falls back to DOT or SVG artifacts."
+      ],
+      "pass_criteria": [
+        "The rendering path names the final HTML artifact."
+      ]
     }
   ]
 }

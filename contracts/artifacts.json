@@ -1,0 +1,53 @@
+{
+  "framework": "skill-framework/v1",
+  "artifacts": {
+    "skill_entrypoint": {
+      "path": "SKILL.md",
+      "kind": "markdown",
+      "required": true,
+      "sections": [
+        "# Skill Framework",
+        "## Core Model",
+        "## Execution Workflow",
+        "## Invariants",
+        "## Runtime",
+        "## Completion Standard"
+      ]
+    },
+    "theory": {
+      "path": "theory.md",
+      "kind": "markdown",
+      "required": true,
+      "sections": [
+        "# Theory",
+        "## Purpose",
+        "## Domain Model",
+        "## Invariants",
+        "## Failure Theory",
+        "## Judgment Rubric"
+      ]
+    },
+    "machine": {
+      "path": "skill.machine.json",
+      "kind": "json",
+      "required": true,
+      "validator": "validate_machine"
+    },
+    "graph": {
+      "path": "node.graph.json",
+      "kind": "json",
+      "required": true,
+      "validator": "validate_graph"
+    },
+    "render_skill_html_script": {
+      "path": "scripts/render_skill_html.py",
+      "kind": "script",
+      "required": true
+    },
+    "diagram_html_asset": {
+      "path": "assets/skill-framework-flow.html",
+      "kind": "html",
+      "required": false
+    }
+  }
+}

@@ -32,6 +32,8 @@ skill-framework/
   agents/
 ```
 
+See [CONTRIBUTE.md](CONTRIBUTE.md) for the maintainer guide to every file, key JSON fields, the meaning of `skill-framework/v1`, and how the machine, graph, contracts, rules, context policy, runtime, scripts, and evals work together.
+
 Generated skills use this canonical structure:
 
 ```text
@@ -103,6 +105,23 @@ python <skill-framework-root>/scripts/validate_machine.py <target-skill-path>
 python <skill-framework-root>/scripts/validate_contracts.py <target-skill-path>
 python <skill-framework-root>/scripts/run_skill_evals.py <target-skill-path>
 ```
+
+## Render Skill Diagrams
+
+`skill-framework` renders whole-skill diagrams as standalone HTML pages.
+
+Use the HTML renderer when you want one overall diagram that shows state-machine transitions, state-internal execution nodes, and workflow steps in a styled, navigable page:
+
+```bash
+python <skill-framework-root>/scripts/render_skill_html.py <target-skill-path> -o skill-flow.html
+```
+
+Notes:
+
+- HTML is the official final artifact
+- The renderer reads `skill.machine.json`, `node.graph.json`, and `contracts/nodes.json` directly
+- The page is emitted as a single self-contained HTML file
+- When the target skill has a `DESIGN.md`, the renderer reuses its design-token colors as the diagram theme when possible
 
 ## Runtime
 
@@ -244,6 +263,23 @@ python <skill-framework-root>/scripts/validate_machine.py <target-skill-path>
 python <skill-framework-root>/scripts/validate_contracts.py <target-skill-path>
 python <skill-framework-root>/scripts/run_skill_evals.py <target-skill-path>
 ```
+
+## 渲染 Skill 流程图
+
+`skill-framework` 现在把整体 skill 图渲染为单文件 HTML 页面。
+
+如果你想得到完整总图，使用下面这条正式命令：
+
+```bash
+python <skill-framework-root>/scripts/render_skill_html.py <target-skill-path> -o skill-flow.html
+```
+
+说明：
+
+- HTML 是正式最终交付产物
+- 渲染器直接读取 `skill.machine.json`、`node.graph.json` 和 `contracts/nodes.json`
+- 页面是单文件、自包含的 HTML
+- 如果目标 skill 有 `DESIGN.md`，渲染器会尽量复用其中的设计 token 配色
 
 ## Runtime
 
