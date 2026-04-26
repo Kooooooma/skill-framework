@@ -8,10 +8,8 @@
       "sections": [
         "# Skill Framework",
         "## Core Model",
-        "## Execution Workflow",
-        "## Invariants",
-        "## Runtime",
-        "## Completion Standard"
+        "## Execution",
+        "## Available Scripts"
       ]
     },
     "theory": {
@@ -40,7 +38,7 @@
       "validator": "validate_graph"
     },
     "render_skill_html_script": {
-      "path": "scripts/render_skill_html.py",
+      "path": "scripts/render_skill_html.mjs",
       "kind": "script",
       "required": true
     },

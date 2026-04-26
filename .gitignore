@@ -1,5 +1,10 @@
-.skill-framework/runs/
+.skill-framework/
 *.tmp
 __pycache__/
 *.pyc
 .DS_Store
+node_modules
+package-lock.json
+package.json
+.codex
+tests

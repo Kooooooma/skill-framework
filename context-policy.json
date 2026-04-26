@@ -58,22 +58,10 @@
           "reason": "Runtime uses it to compute the active graph."
         },
         {
-          "path": "references/authoring-principles.md",
-          "resource_type": "reference",
-          "audience": "agent_visible",
-          "reason": "Authoring requests follow the framework's authoring guidance."
-        },
-        {
-          "path": "references/examples.md",
-          "resource_type": "reference",
-          "audience": "agent_visible",
-          "reason": "Examples help choose the right workflow-program structure."
-        },
-        {
           "path": "scripts/init_skill.py",
           "resource_type": "script",
           "audience": "agent_visible",
-          "reason": "Authoring requests may need the scaffold script."
+          "reason": "Authoring requests use the scaffold script when creating a generated skill."
         },
         {
           "path": "rules/state/execute.json",
@@ -94,12 +82,6 @@
           "resource_type": "runtime_spec",
           "audience": "runtime_only",
           "reason": "Runtime uses it to compute the active graph."
-        },
-        {
-          "path": "references/testing-method.md",
-          "resource_type": "reference",
-          "audience": "agent_visible",
-          "reason": "Validation requests should use the framework's testing approach."
         },
         {
           "path": "scripts/validate_skill.py",
@@ -196,7 +178,7 @@
           "reason": "Diagram requests should align with the skill's public diagram-rendering entrypoints."
         },
         {
-          "path": "scripts/render_skill_html.py",
+          "path": "scripts/render_skill_html.mjs",
           "resource_type": "script",
           "audience": "agent_visible",
           "reason": "Whole-skill HTML rendering uses this script."

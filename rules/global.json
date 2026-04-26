@@ -24,6 +24,24 @@
       "scope": "global",
       "priority": 4,
       "statement": "Missing HTML-render dependencies is a blocker for diagram rendering, not a reason to fall back to DOT or SVG artifacts."
+    },
+    {
+      "id": "runtime-init-before-node-execution",
+      "scope": "global",
+      "priority": 5,
+      "statement": "Every run MUST begin with an explicit `skill_runtime.py init-run` call that produces a run-id. No node may execute task work before a run-id is confirmed in the event log. Proceeding without init-run is a protocol violation, not a stylistic choice."
+    },
+    {
+      "id": "runtime-record-result-before-transition",
+      "scope": "global",
+      "priority": 6,
+      "statement": "Every node MUST submit its result via `skill_runtime.py record-node-result` and receive an explicit `accepted: true` before any state transition is attempted. Declaring a node complete without a confirmed runtime acceptance is a protocol violation."
+    },
+    {
+      "id": "runtime-transition-must-be-explicit",
+      "scope": "global",
+      "priority": 7,
+      "statement": "State transitions MUST be triggered via `skill_runtime.py transition --event <event>`. The agent must not assume state has advanced simply because task work is finished. Skipping this call is a protocol violation that leaves the run in a zombie state and corrupts the event log."
     }
   ]
 }

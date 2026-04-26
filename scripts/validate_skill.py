@@ -26,10 +26,6 @@ FRAMEWORK_REQUIRED = [
     "evals/pressure-scenarios.md",
     "evals/framework-pressure-scenarios.md",
     "evals/expected-behaviors.json",
-    "references/authoring-principles.md",
-    "references/testing-method.md",
-    "references/anti-patterns.md",
-    "references/examples.md",
     "scaffolds/canonical-skill/SKILL.md",
     "scaffolds/canonical-skill/theory.md",
     "scaffolds/canonical-skill/skill.machine.json",
@@ -51,7 +47,8 @@ FRAMEWORK_REQUIRED = [
     "scripts/validate_skill.py",
     "scripts/validate_machine.py",
     "scripts/validate_contracts.py",
-    "scripts/render_skill_html.py",
+    "scripts/render_skill_html.mjs",
+    "scripts/render_skill_client.js",
     "scripts/run_skill_evals.py",
     "scripts/skill_runtime.py",
     "agents/metadata.json",
@@ -175,7 +172,7 @@ def check_generated_sections(root: Path, report: Report) -> None:
 
     skill_sections = artifacts.get("skill_entrypoint", {}).get(
         "sections",
-        ["## Core Model", "## Execution Workflow", "## Invariants", "## Runtime", "## Completion Standard"],
+        ["## Core Model", "## Execution", "## Available Scripts"],
     )
     theory_sections = artifacts.get("theory", {}).get(
         "sections",
@@ -386,6 +383,7 @@ def validate(root: Path) -> Report:
     if root.name == "skill-framework":
         check_required(root, FRAMEWORK_REQUIRED, report)
         check_json_syntax(root / "framework", report)
+        check_generated_sections(root, report)
         scaffold = root / "scaffolds" / "canonical-skill"
         if scaffold.exists():
             generated_report = validate(scaffold)

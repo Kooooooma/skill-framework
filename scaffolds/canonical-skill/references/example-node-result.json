@@ -2,10 +2,11 @@
   "node": "main",
   "status": "success",
   "outputs": {
-    "node_result": "completed"
+    "node_result": "template example output"
   },
   "blockers": [],
   "validation_notes": [
+    "Template example only. Replace output payload fields to match the concrete skill.",
     "All required workflow steps were reported."
   ],
   "recommended_transition": "success",

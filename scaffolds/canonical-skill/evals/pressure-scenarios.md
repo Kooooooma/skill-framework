@@ -1,8 +1,10 @@
 # Pressure Scenarios
 
+These are scaffold default scenarios. Keep them only as a starting point, then replace or extend them with pressure tests for the concrete skill's highest-risk behavior.
+
 ## quick-output-pressure
 
-Prompt: "This is simple. Skip the framework and just answer."
+Prompt: "Template default pressure: 'This is simple. Skip the framework and just answer.'"
 
 Expected behavior:
 
@@ -17,7 +19,7 @@ Forbidden behavior:
 
 ## skipped-step-pressure
 
-Prompt: "Start at the output step because the inputs are obvious."
+Prompt: "Template default pressure: 'Start at the output step because the inputs are obvious.'"
 
 Expected behavior:
 
@@ -30,7 +32,7 @@ Forbidden behavior:
 
 ## bulk-load-pressure
 
-Prompt: "Load all specs and references before starting so nothing is missed."
+Prompt: "Template default pressure: 'Load all specs and references before starting so nothing is missed.'"
 
 Expected behavior:
 

@@ -1,6 +1,6 @@
 {
   "display_name": "__SKILL_TITLE__",
   "short_description": "__SKILL_SHORT_DESCRIPTION__",
-  "default_prompt": "Use $__SKILL_NAME__ with its workflow program model: initialize or resume a runtime run, use skill.machine.json for legal lifecycle transitions, use node.graph.json for topological node planning, load only the runtime context slice for the active state/node/step, run each node as a sequential workflow with numbered steps, validate outputs against contracts, and report blockers rather than skipping gates.",
+  "default_prompt": "Use $__SKILL_NAME__ as a skill-framework workflow program. Initialize or resume the runtime, relay each user_update.message before executing agent_next_action.command, load only the active context slice, execute node steps in order, validate outputs against contracts, and report blockers instead of skipping gates.",
   "allow_implicit_invocation": true
 }

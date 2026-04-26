@@ -8,10 +8,8 @@
       "sections": [
         "# __SKILL_TITLE__",
         "## Core Model",
-        "## Execution Workflow",
-        "## Invariants",
-        "## Runtime",
-        "## Completion Standard"
+        "## Execution",
+        "## Available Scripts"
       ]
     },
     "theory": {

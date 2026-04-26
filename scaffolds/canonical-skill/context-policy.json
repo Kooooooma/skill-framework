@@ -80,6 +80,12 @@
       ],
       "validate_and_handoff": [
         {
+          "path": "references/example-node-result.json",
+          "resource_type": "reference",
+          "audience": "agent_visible",
+          "reason": "The final step may use the template node-result example while preparing the handoff."
+        },
+        {
           "path": "contracts/node-result.json",
           "resource_type": "contract",
           "audience": "both",

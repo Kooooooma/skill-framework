@@ -5,7 +5,7 @@
       "id": "preserve-canonical-structure",
       "scope": "global",
       "priority": 1,
-      "statement": "Keep this skill inside the canonical workflow program structure.",
+      "statement": "Keep generated skills inside the canonical workflow program structure; customize behavior by editing theory, contracts, rules, references, and evals rather than removing framework files.",
       "forbidden": [
         "Removing machine, graph, contracts, context policy, rules, runtime config, or evals because the current workflow has few states or nodes."
       ]
@@ -38,6 +38,33 @@
       "forbidden": [
         "Bulk-loading every machine, graph, contract, rule, reference, and eval file for normal node execution."
       ]
+    },
+    {
+      "id": "replace-template-defaults",
+      "scope": "global",
+      "priority": 5,
+      "statement": "Treat scaffold prose, examples, and eval prompts as template defaults until they are rewritten for the concrete skill.",
+      "forbidden": [
+        "Assuming placeholder wording, default pressure prompts, or example outputs are already the final domain behavior of the generated skill."
+      ]
+    },
+    {
+      "id": "runtime-init-before-node-execution",
+      "scope": "global",
+      "priority": 6,
+      "statement": "Every run MUST begin with an explicit `skill_runtime.py init-run` call that produces a run-id. No node may execute task work before a run-id is confirmed in the event log. Proceeding without init-run is a protocol violation, not a stylistic choice."
+    },
+    {
+      "id": "runtime-record-result-before-transition",
+      "scope": "global",
+      "priority": 7,
+      "statement": "Every node MUST submit its result via `skill_runtime.py record-node-result` and receive an explicit `accepted: true` before any state transition is attempted. Declaring a node complete without a confirmed runtime acceptance is a protocol violation."
+    },
+    {
+      "id": "runtime-transition-must-be-explicit",
+      "scope": "global",
+      "priority": 8,
+      "statement": "State transitions MUST be triggered via `skill_runtime.py transition --event <event>`. The agent must not assume state has advanced simply because task work is finished. Skipping this call is a protocol violation that leaves the run in a zombie state and corrupts the event log."
     }
   ]
 }

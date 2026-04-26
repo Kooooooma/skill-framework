@@ -4,8 +4,8 @@
     "main": {
       "kind": "agent",
       "execution": "sequential",
-      "purpose": "Execute the primary skill behavior while preserving theory, rules, runtime state, and contracts.",
-      "instruction": "Handle the user's request only inside the active state and node. Follow the numbered workflow steps in order, report blockers instead of bypassing rules, and return a node result that includes every required step.",
+      "purpose": "Template default main node for the concrete skill while preserving runtime discipline, rules, and contracts.",
+      "instruction": "Replace this node's domain intent, references, and output expectations with concrete skill behavior. During execution, stay inside the active state and node, follow the numbered workflow steps in order, report blockers instead of bypassing rules, and return a node result that includes every required step.",
       "inputs": [
         "user_request",
         "theory.md",
@@ -22,7 +22,7 @@
         "rules/state/execute.json",
         "rules/node/main.json",
         "rules/step/validate-and-handoff.json",
-        "references/*"
+        "references/example-node-result.json"
       ],
       "allowed_writes": [
         "node_result"
@@ -39,9 +39,9 @@
         {
           "step": 1,
           "name": "load_required_context",
-          "action": "Use the runtime context slice to load only the theory, rules, contracts, and references required for this state, node, and step.",
+          "action": "Use the runtime context slice to load the active theory, rules, contracts, and step-level references for this state, node, and step.",
           "done_when": "The current state, node, required inputs, active instruction, active rules, and context slice are explicit.",
-          "agent_prompt_hint": "Do not read every JSON file. Use only the resources returned in the current context slice."
+          "agent_prompt_hint": "Use the resources returned in the current context slice."
         },
         {
           "step": 2,
@@ -53,7 +53,7 @@
         {
           "step": 3,
           "name": "execute_task",
-          "action": "Perform the user-requested work within the active node contract and applicable rules.",
+          "action": "Perform the concrete skill-specific work for this generated skill within the active node contract and applicable rules.",
           "done_when": "The requested output is produced or a blocker is reported."
         },
         {

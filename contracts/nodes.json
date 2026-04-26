@@ -44,8 +44,8 @@
         {
           "step": 4,
           "name": "validate_and_handoff",
-          "action": "Return a node result whose recommended transition matches the classified route or reports a blocker.",
-          "done_when": "The node result includes the route classification, blockers if any, and a legal recommended transition."
+          "action": "Return a node result whose recommended_transition matches the classified route or reports a blocker. The orchestrator will then call record-node-result and transition using this result.",
+          "done_when": "The node result includes the route classification, blockers if any, and a legal recommended_transition."
         }
       ]
     },
@@ -53,14 +53,12 @@
       "kind": "agent",
       "execution": "sequential",
       "purpose": "Handle skill creation, upgrade, and evolution requests using the existing framework guidance and scaffold tooling.",
-      "instruction": "Preserve existing authoring behavior. Route to the scaffold or authoring references only when the request actually concerns skill creation or evolution.",
+      "instruction": "Preserve existing authoring behavior. Use the active authoring contracts, rules, and scaffold script when the request actually concerns skill creation or evolution.",
       "inputs": ["user_request", "request_route"],
       "outputs": ["node_result"],
       "allowed_reads": [
         "theory.md",
         "SKILL.md",
-        "references/authoring-principles.md",
-        "references/examples.md",
         "contracts/nodes.json#/nodes/author_main",
         "contracts/node-result.json",
         "rules/global.json",
@@ -76,8 +74,8 @@
         {
           "step": 1,
           "name": "load_required_context",
-          "action": "Load only the authoring context slice, including the framework's authoring references and scaffold script.",
-          "done_when": "The authoring guidance and tools are explicit."
+          "action": "Load the authoring context slice, including the active theory, state rule, node contract, node-result contract, scaffold script, node rule, and handoff rule.",
+          "done_when": "The authoring contracts, rules, and scaffold tool are explicit."
         },
         {
           "step": 2,
@@ -95,7 +93,7 @@
         {
           "step": 4,
           "name": "validate_and_handoff",
-          "action": "Return a node result that preserves the existing authoring behavior while making blockers and outputs explicit.",
+          "action": "Return a node result that preserves the existing authoring behavior while making blockers and outputs explicit. The orchestrator will then call record-node-result and transition using this result.",
           "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
         }
       ]
@@ -110,7 +108,6 @@
       "allowed_reads": [
         "theory.md",
         "SKILL.md",
-        "references/testing-method.md",
         "contracts/nodes.json#/nodes/validate_main",
         "contracts/node-result.json",
         "rules/global.json",
@@ -129,7 +126,7 @@
         {
           "step": 1,
           "name": "load_required_context",
-          "action": "Load only the validation context slice, including validation references and scripts.",
+          "action": "Load the validation context slice, including the active theory, state rule, node contract, node-result contract, validator scripts, node rule, and handoff rule.",
           "done_when": "The validation tools and constraints are explicit."
         },
         {
@@ -148,7 +145,7 @@
         {
           "step": 4,
           "name": "validate_and_handoff",
-          "action": "Return a node result that makes the chosen validation path, outputs, and blockers explicit.",
+          "action": "Return a node result that makes the chosen validation path, outputs, and blockers explicit. The orchestrator will then call record-node-result and transition using this result.",
           "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
         }
       ]
@@ -199,7 +196,7 @@
         {
           "step": 4,
           "name": "validate_and_handoff",
-          "action": "Return a node result that makes the chosen runtime path, outputs, and blockers explicit.",
+          "action": "Return a node result that makes the chosen runtime path, outputs, and blockers explicit. The orchestrator will then call record-node-result and transition using this result.",
           "done_when": "The node result includes status, outputs, blockers, validation notes, and complete step results."
         }
       ]
@@ -220,7 +217,8 @@
         "rules/state/execute.json",
         "rules/node/main.json",
         "rules/step/validate-and-handoff.json",
-        "scripts/render_skill_html.py",
+        "scripts/render_skill_html.mjs",
+        "scripts/render_skill_client.js",
         "scripts/validate_machine.py"
       ],
       "allowed_writes": ["node_result", "diagram_html"],
@@ -249,7 +247,7 @@
         {
           "step": 4,
           "name": "validate_and_handoff",
-          "action": "Return a node result that records the final HTML artifact path, outputs, blockers, and complete step results.",
+          "action": "Return a node result that records the final HTML artifact path, outputs, blockers, and complete step results. The orchestrator will then call record-node-result and transition using this result.",
           "done_when": "The node result includes the final HTML artifact and complete step results."
         }
       ]

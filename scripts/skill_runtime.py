@@ -267,6 +267,47 @@ def status_for_state(root: Path, state: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def make_user_update(message: str, *, wait_for_user_response: bool = False, **kwargs: Any) -> dict[str, Any]:
+    update = {
+        "message": message,
+        "wait_for_user_response": wait_for_user_response,
+    }
+    update.update(kwargs)
+    return update
+
+
+def make_agent_next_action(description: str, command: str | None, **kwargs: Any) -> dict[str, Any]:
+    action = {
+        "description": description,
+        "command": command,
+    }
+    action.update(kwargs)
+    return action
+
+
+def attach_runtime_protocol(
+    payload: dict[str, Any],
+    *,
+    user_message: str,
+    action_description: str,
+    command: str | None,
+    wait_for_user_response: bool = False,
+    user_extra: dict[str, Any] | None = None,
+    action_extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload["user_update"] = make_user_update(
+        user_message,
+        wait_for_user_response=wait_for_user_response,
+        **(user_extra or {}),
+    )
+    payload["agent_next_action"] = make_agent_next_action(
+        action_description,
+        command,
+        **(action_extra or {}),
+    )
+    return payload
+
+
 def cmd_init_run(root: Path) -> int:
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:8]
     rd = run_dir(root, run_id)
@@ -289,7 +330,18 @@ def cmd_init_run(root: Path) -> int:
         state["last_event_id"] = event["event_id"]
         atomic_write(state_path(root, run_id), state)
         append_event(root, run_id, event)
-    print(json.dumps({"run_id": run_id, "state": state}, indent=2))
+    script = Path(__file__).resolve()
+    payload = {
+        "run_id": run_id,
+        "state": state,
+    }
+    attach_runtime_protocol(
+        payload,
+        user_message=f"Run initialized in state '{initial}'. Next, the runtime will generate the node execution plan for this state.",
+        action_description=f"Generate the node execution plan for state '{initial}'.",
+        command=f"{sys.executable} {script} plan {root} --run-id {run_id}",
+    )
+    print(json.dumps(payload, indent=2))
     return 0
 
 
@@ -309,6 +361,26 @@ def cmd_plan(root: Path, run_id: str) -> int:
     cfg = runtime_config(root)
     with run_lock(run_dir(root, run_id), cfg.get("lock_timeout_seconds", 30)):
         atomic_write(node_plan_path(root, run_id), plan)
+    script = Path(__file__).resolve()
+    nodes = plan["nodes"]
+    if nodes:
+        attach_runtime_protocol(
+            plan,
+            user_message=(
+                f"Planned state '{state['current_state']}'. Next, the runtime will request the context slice for node '{nodes[0]}'."
+            ),
+            action_description=f"Request the context slice for node '{nodes[0]}'.",
+            command=f"{sys.executable} {script} context {root} --run-id {run_id} --node {nodes[0]}",
+        )
+    else:
+        attach_runtime_protocol(
+            plan,
+            user_message=(
+                f"State '{state['current_state']}' has no executable nodes. Next, the runtime will apply the appropriate transition event."
+            ),
+            action_description="Apply the appropriate transition event for this state.",
+            command=f"{sys.executable} {script} transition {root} --run-id {run_id} --event <event>",
+        )
     print(json.dumps(plan, indent=2))
     return 0
 
@@ -319,6 +391,21 @@ def cmd_context(root: Path, run_id: str, node: str | None, step: str | None) -> 
     cfg = runtime_config(root)
     with run_lock(run_dir(root, run_id), cfg.get("lock_timeout_seconds", 30)):
         append_event(root, run_id, new_event("context_slice_computed", state["current_state"], node=node, details={"step": step}))
+    script = Path(__file__).resolve()
+    if node:
+        attach_runtime_protocol(
+            result,
+            user_message=(
+                f"Loaded the context slice for node '{node}' in state '{state['current_state']}'. Next, the agent will execute that node."
+            ),
+            action_description=(
+                f"Read active_instruction and execute node '{node}' steps in order. "
+                "Follow each step's action and done_when. "
+                "Write your completed result to a JSON file, then submit it."
+            ),
+            command=f"{sys.executable} {script} record-node-result {root} --run-id {run_id} --node {node} --result <path-to-result.json>",
+            action_extra={"result_schema": str(root / "contracts" / "node-result.json")},
+        )
     print(json.dumps(result, indent=2))
     return 0
 
@@ -366,6 +453,47 @@ def cmd_transition(root: Path, run_id: str, event_name: str) -> int:
         state["last_event_id"] = event["event_id"]
         save_state(root, run_id, state)
         append_event(root, run_id, event)
+    script = Path(__file__).resolve()
+    is_terminal = state["status"] == "done"
+    if is_terminal:
+        attach_runtime_protocol(
+            state,
+            user_message=f"Terminal state '{target}' reached. The run is complete.",
+            action_description="No further action. The run is complete.",
+            command=None,
+        )
+    elif target == "blocked":
+        # Read blockers from the most recent node result so the agent can surface them immediately.
+        latest_blockers: list[str] = []
+        nr_dir = node_result_dir(root, run_id)
+        if nr_dir.exists():
+            node_files = sorted(nr_dir.glob("*.json"), key=lambda f: f.stat().st_mtime, reverse=True)
+            if node_files:
+                try:
+                    latest_blockers = load_json(node_files[0]).get("blockers", [])
+                except Exception:
+                    pass
+        attach_runtime_protocol(
+            state,
+            user_message="Run is blocked. The blockers below must be resolved before execution can continue.",
+            action_description=(
+                "Wait for the user's response. Do not continue until they confirm the blockers are resolved."
+            ),
+            command=None,
+            wait_for_user_response=True,
+            user_extra={"blockers": latest_blockers},
+            action_extra={
+                "resolution_command": f"{sys.executable} {script} transition {root} --run-id {run_id} --event resolved",
+            },
+        )
+    else:
+        attach_runtime_protocol(
+            state,
+            user_message=f"Entered state '{target}'. Next, the runtime will generate the node execution plan for this state.",
+            action_description=f"Generate the node execution plan for state '{target}'.",
+            command=f"{sys.executable} {script} plan {root} --run-id {run_id}",
+        )
+
     print(json.dumps(state, indent=2))
     return 0
 
@@ -399,12 +527,35 @@ def cmd_record_node_result(root: Path, run_id: str, node: str, result_path: str)
         errors = validate_node_result(root, node, result)
         if errors:
             append_event(root, run_id, new_event("node_result_rejected", state["current_state"], node=node, status="rejected", details={"errors": errors}))
-            print(json.dumps({"accepted": False, "errors": errors}, indent=2))
+            script = Path(__file__).resolve()
+            payload = {
+                "accepted": False,
+                "errors": errors,
+            }
+            attach_runtime_protocol(
+                payload,
+                user_message=f"Node '{node}' result was rejected. Next, the agent must fix the result and resubmit it.",
+                action_description="Fix the errors above and resubmit the node result.",
+                command=f"{sys.executable} {script} record-node-result {root} --run-id {run_id} --node {node} --result <path-to-fixed-result.json>",
+            )
+            print(json.dumps(payload, indent=2))
             return 1
         target = node_result_dir(root, run_id) / f"{node}.json"
         atomic_write(target, result)
         append_event(root, run_id, new_event("node_result_recorded", state["current_state"], node=node, status=result.get("status"), details={"result_path": str(target)}))
-    print(json.dumps({"accepted": True, "node": node}, indent=2))
+    script = Path(__file__).resolve()
+    recommended = result.get("recommended_transition", "<transition-event>")
+    payload = {
+        "accepted": True,
+        "node": node,
+    }
+    attach_runtime_protocol(
+        payload,
+        user_message=f"Node '{node}' result was accepted. Next, the runtime will advance the state machine using transition '{recommended}'.",
+        action_description=f"Advance the state machine using recommended transition '{recommended}'.",
+        command=f"{sys.executable} {script} transition {root} --run-id {run_id} --event {recommended}",
+    )
+    print(json.dumps(payload, indent=2))
     return 0
 
 

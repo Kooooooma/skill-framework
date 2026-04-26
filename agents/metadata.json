@@ -1,6 +1,6 @@
 {
   "display_name": "Skill Framework",
   "short_description": "Build workflow-program skills",
-  "default_prompt": "Use /skill-framework to route requests into authoring, validation, runtime, or whole-skill diagram rendering work: define theory and invariants first, model lifecycle with a state machine, model state-internal work as a DAG of nodes, use deterministic validators and runtime controls when requested, and when asked for a skill flow diagram generate a standalone HTML artifact with render_skill_html.py directly from the skill JSON specs.",
+  "default_prompt": "Use /skill-framework to route requests into authoring, validation, runtime, or whole-skill diagram rendering work: define theory and invariants first, model lifecycle with a state machine, model state-internal work as a DAG of nodes, relay each runtime user_update.message before automatically executing agent_next_action.command when present, use deterministic validators and runtime controls when requested, and when asked for a skill flow diagram generate a standalone HTML artifact with render_skill_html.mjs directly from the skill JSON specs.",
   "allow_implicit_invocation": true
 }
