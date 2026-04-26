@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import uuid
@@ -306,6 +307,31 @@ def status_for_state(root: Path, state: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def skill_name(root: Path) -> str:
+    skill_file = root / "SKILL.md"
+    try:
+        text = skill_file.read_text(encoding="utf-8")
+    except OSError:
+        return root.name
+    match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+    if not match:
+        return root.name
+    name = re.search(r"^name:\s*([^\n]+?)\s*$", match.group(1), re.MULTILINE)
+    if not name:
+        return root.name
+    value = name.group(1).strip().strip("\"'")
+    if value.startswith("__") and value.endswith("__"):
+        return root.name
+    return value or root.name
+
+
+def prefix_user_message(root: Path, message: str) -> str:
+    prefix = f"[{skill_name(root)}] "
+    if message.startswith(prefix):
+        return message
+    return f"{prefix}{message}"
+
+
 def make_user_update(message: str, *, wait_for_user_response: bool = False, **kwargs: Any) -> dict[str, Any]:
     update = {
         "message": message,
@@ -326,6 +352,7 @@ def make_agent_next_action(description: str, command: str | None, **kwargs: Any)
 
 def attach_runtime_protocol(
     payload: dict[str, Any],
+    root: Path,
     *,
     user_message: str,
     action_description: str,
@@ -335,7 +362,7 @@ def attach_runtime_protocol(
     action_extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     payload["user_update"] = make_user_update(
-        user_message,
+        prefix_user_message(root, user_message),
         wait_for_user_response=wait_for_user_response,
         **(user_extra or {}),
     )
@@ -376,6 +403,7 @@ def cmd_init_run(root: Path) -> int:
     }
     attach_runtime_protocol(
         payload,
+        root,
         user_message=f"Run initialized in state '{initial}'. Next, the runtime will generate the node execution plan for this state.",
         action_description=f"Generate the node execution plan for state '{initial}'.",
         command=f"{sys.executable} {script} plan {root} --run-id {run_id}",
@@ -405,6 +433,7 @@ def cmd_plan(root: Path, run_id: str) -> int:
     if nodes:
         attach_runtime_protocol(
             plan,
+            root,
             user_message=(
                 f"Planned state '{state['current_state']}'. Next, the runtime will request the context slice for node '{nodes[0]}'."
             ),
@@ -414,6 +443,7 @@ def cmd_plan(root: Path, run_id: str) -> int:
     else:
         attach_runtime_protocol(
             plan,
+            root,
             user_message=(
                 f"State '{state['current_state']}' has no executable nodes. Next, the runtime will apply the appropriate transition event."
             ),
@@ -434,6 +464,7 @@ def cmd_context(root: Path, run_id: str, node: str | None, step: str | None) -> 
     if node:
         attach_runtime_protocol(
             result,
+            root,
             user_message=(
                 f"Loaded the context slice for node '{node}' in state '{state['current_state']}'. Next, the agent will execute that node."
             ),
@@ -497,6 +528,7 @@ def cmd_transition(root: Path, run_id: str, event_name: str) -> int:
     if is_terminal:
         attach_runtime_protocol(
             state,
+            root,
             user_message=f"Terminal state '{target}' reached. The run is complete.",
             action_description="No further action. The run is complete.",
             command=None,
@@ -514,6 +546,7 @@ def cmd_transition(root: Path, run_id: str, event_name: str) -> int:
                     pass
         attach_runtime_protocol(
             state,
+            root,
             user_message="Run is blocked. The blockers below must be resolved before execution can continue.",
             action_description=(
                 "Wait for the user's response. Do not continue until they confirm the blockers are resolved."
@@ -528,6 +561,7 @@ def cmd_transition(root: Path, run_id: str, event_name: str) -> int:
     else:
         attach_runtime_protocol(
             state,
+            root,
             user_message=f"Entered state '{target}'. Next, the runtime will generate the node execution plan for this state.",
             action_description=f"Generate the node execution plan for state '{target}'.",
             command=f"{sys.executable} {script} plan {root} --run-id {run_id}",
@@ -573,6 +607,7 @@ def cmd_record_node_result(root: Path, run_id: str, node: str, result_path: str)
             }
             attach_runtime_protocol(
                 payload,
+                root,
                 user_message=f"Node '{node}' result was rejected. Next, the agent must fix the result and resubmit it.",
                 action_description="Fix the errors above and resubmit the node result.",
                 command=f"{sys.executable} {script} record-node-result {root} --run-id {run_id} --node {node} --result <path-to-fixed-result.json>",
@@ -590,6 +625,7 @@ def cmd_record_node_result(root: Path, run_id: str, node: str, result_path: str)
     }
     attach_runtime_protocol(
         payload,
+        root,
         user_message=f"Node '{node}' result was accepted. Next, the runtime will advance the state machine using transition '{recommended}'.",
         action_description=f"Advance the state machine using recommended transition '{recommended}'.",
         command=f"{sys.executable} {script} transition {root} --run-id {run_id} --event {recommended}",
