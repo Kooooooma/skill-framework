@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from validate_skill import (  # noqa: E402
     Report,
+    check_contract_schema_targets,
     check_context_policy,
     check_generated_sections,
     check_node_contracts,
@@ -23,6 +24,7 @@ def main() -> int:
     args = parser.parse_args()
     root = Path(args.skill_path).expanduser().resolve()
     report = Report()
+    check_contract_schema_targets(root, report)
     check_generated_sections(root, report)
     check_node_contracts(root, report)
     check_rules(root, report)

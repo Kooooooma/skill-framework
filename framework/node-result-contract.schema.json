@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Node Result Contract",
+  "type": "object",
+  "required": ["framework", "node_result"],
+  "properties": {
+    "framework": { "type": "string" },
+    "node_result": {
+      "type": "object",
+      "required": ["required_fields", "status_values", "step_results"],
+      "properties": {
+        "required_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "status_values": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "step_results": {
+          "type": "object",
+          "required": ["required_fields", "status_values"],
+          "properties": {
+            "required_fields": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" }
+            },
+            "status_values": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        },
+        "rule": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

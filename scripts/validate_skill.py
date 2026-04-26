@@ -9,6 +9,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from schema_validation import validate_schema_document
+
 
 FRAMEWORK_REQUIRED = [
     "SKILL.md",
@@ -21,6 +23,9 @@ FRAMEWORK_REQUIRED = [
     "framework/artifact-contract.schema.json",
     "framework/context-policy.schema.json",
     "framework/eval-contract.schema.json",
+    "framework/node-result-contract.schema.json",
+    "framework/runtime-state-contract.schema.json",
+    "framework/runtime-event-contract.schema.json",
     "framework/runtime-state.schema.json",
     "framework/runtime-event.schema.json",
     "evals/pressure-scenarios.md",
@@ -53,6 +58,31 @@ FRAMEWORK_REQUIRED = [
     "scripts/skill_runtime.py",
     "agents/metadata.json",
 ]
+
+SCHEMA_ROOT = Path(__file__).resolve().parent.parent / "framework"
+
+SPEC_SCHEMA_TARGETS = [
+    ("skill-machine.schema.json", "skill.machine.json"),
+    ("node-graph.schema.json", "node.graph.json"),
+    ("context-policy.schema.json", "context-policy.json"),
+    ("eval-contract.schema.json", "evals/expected-behaviors.json"),
+    ("node-contract.schema.json", "contracts/nodes.json"),
+    ("artifact-contract.schema.json", "contracts/artifacts.json"),
+    ("node-result-contract.schema.json", "contracts/node-result.json"),
+    ("runtime-state-contract.schema.json", "contracts/runtime-state.json"),
+    ("runtime-event-contract.schema.json", "contracts/runtime-event.json"),
+]
+
+CONTRACT_SCHEMA_TARGETS = [
+    ("context-policy.schema.json", "context-policy.json"),
+    ("node-contract.schema.json", "contracts/nodes.json"),
+    ("artifact-contract.schema.json", "contracts/artifacts.json"),
+    ("node-result-contract.schema.json", "contracts/node-result.json"),
+    ("runtime-state-contract.schema.json", "contracts/runtime-state.json"),
+    ("runtime-event-contract.schema.json", "contracts/runtime-event.json"),
+]
+
+RULE_SCHEMA = "rule-contract.schema.json"
 
 GENERATED_REQUIRED = [
     "SKILL.md",
@@ -100,6 +130,38 @@ def load_json(path: Path, report: Report) -> Any:
     except json.JSONDecodeError as exc:
         report.error(f"Invalid JSON {path}: {exc}")
     return None
+
+
+def framework_schema_root(root: Path) -> Path:
+    local = root / "framework"
+    if local.exists():
+        return local
+    return SCHEMA_ROOT
+
+
+def check_json_schema(root: Path, schema_name: str, target_rel: str, report: Report) -> None:
+    schema_path = framework_schema_root(root) / schema_name
+    target_path = root / target_rel
+    schema = load_json(schema_path, report)
+    target = load_json(target_path, report)
+    if not isinstance(schema, dict) or target is None:
+        return
+    for error in validate_schema_document(target, schema):
+        report.error(f"{target_rel} violates framework/{schema_name}: {error}")
+
+
+def check_schema_targets(root: Path, report: Report) -> None:
+    for schema_name, target_rel in SPEC_SCHEMA_TARGETS:
+        check_json_schema(root, schema_name, target_rel, report)
+    for path in sorted((root / "rules").rglob("*.json")):
+        check_json_schema(root, RULE_SCHEMA, str(path.relative_to(root)), report)
+
+
+def check_contract_schema_targets(root: Path, report: Report) -> None:
+    for schema_name, target_rel in CONTRACT_SCHEMA_TARGETS:
+        check_json_schema(root, schema_name, target_rel, report)
+    for path in sorted((root / "rules").rglob("*.json")):
+        check_json_schema(root, RULE_SCHEMA, str(path.relative_to(root)), report)
 
 
 def strip_fragment(resource_path: str) -> str:
@@ -383,7 +445,13 @@ def validate(root: Path) -> Report:
     if root.name == "skill-framework":
         check_required(root, FRAMEWORK_REQUIRED, report)
         check_json_syntax(root / "framework", report)
+        check_schema_targets(root, report)
         check_generated_sections(root, report)
+        check_machine_and_graph(root, report)
+        check_node_contracts(root, report)
+        check_rules(root, report)
+        check_context_policy(root, report)
+        check_eval_files(root, report)
         scaffold = root / "scaffolds" / "canonical-skill"
         if scaffold.exists():
             generated_report = validate(scaffold)
@@ -393,6 +461,7 @@ def validate(root: Path) -> Report:
         check_required(root, GENERATED_REQUIRED, report)
         check_no_legacy_runtime_yaml(root, report)
         check_json_syntax(root, report)
+        check_schema_targets(root, report)
         check_generated_sections(root, report)
         check_machine_and_graph(root, report)
         check_node_contracts(root, report)

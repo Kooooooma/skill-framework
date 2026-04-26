@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from schema_validation import validate_schema_document
+
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -26,6 +28,10 @@ def now() -> str:
 
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def framework_schema_root() -> Path:
+    return Path(__file__).resolve().parent.parent / "framework"
 
 
 def atomic_write(path: Path, data: Any) -> None:
@@ -135,6 +141,39 @@ def read_events(root: Path, run_id: str) -> list[dict[str, Any]]:
     if not path.exists():
         return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def validate_runtime_artifacts(root: Path, run_id: str) -> list[str]:
+    errors: list[str] = []
+    schema_root = framework_schema_root()
+
+    try:
+        state_schema = load_json(schema_root / "runtime-state.schema.json")
+        state = load_json(state_path(root, run_id))
+    except Exception as exc:
+        return [f"Unable to read runtime state: {exc}"]
+    for error in validate_schema_document(state, state_schema):
+        errors.append(f"state.json violates framework/runtime-state.schema.json: {error}")
+
+    try:
+        event_schema = load_json(schema_root / "runtime-event.schema.json")
+        event_text = event_path(root, run_id).read_text(encoding="utf-8")
+    except Exception as exc:
+        errors.append(f"Unable to read runtime events: {exc}")
+        return errors
+
+    for line_number, line in enumerate(event_text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError as exc:
+            errors.append(f"events.jsonl line {line_number} is invalid JSON: {exc}")
+            continue
+        for error in validate_schema_document(event, event_schema):
+            errors.append(f"events.jsonl line {line_number} violates framework/runtime-event.schema.json: {error}")
+
+    return errors
 
 
 def topo_plan(root: Path, state_name: str) -> list[str]:
@@ -588,6 +627,10 @@ def cmd_replay(root: Path, run_id: str) -> int:
 
 
 def cmd_validate_run(root: Path, run_id: str) -> int:
+    artifact_errors = validate_runtime_artifacts(root, run_id)
+    if artifact_errors:
+        print(json.dumps({"valid": False, "errors": artifact_errors}, indent=2))
+        return 1
     replayed = replay_state(root, run_id)
     snapshot = load_state(root, run_id)
     errors = []

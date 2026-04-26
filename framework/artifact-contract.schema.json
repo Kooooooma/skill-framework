@@ -13,7 +13,7 @@
         "properties": {
           "path": { "type": "string" },
           "kind": {
-            "enum": ["markdown", "json", "yaml", "code", "asset", "directory", "text"]
+            "enum": ["markdown", "json", "yaml", "code", "asset", "directory", "text", "script", "html"]
           },
           "required": { "type": "boolean" },
           "sections": {

@@ -444,9 +444,9 @@ If you change one layer, check the adjacent layers too:
 
 - `contracts/nodes.json`: Sequential micro-workflows for each root-skill node.
 - `contracts/artifacts.json`: What root-skill artifacts must exist and what they mean.
-- `contracts/node-result.json`: Required shape of every node result.
-- `contracts/runtime-state.json`: Required shape of persisted runtime state.
-- `contracts/runtime-event.json`: Required shape of runtime event log entries.
+- `contracts/node-result.json`: Skill-local contract for accepted node result payloads.
+- `contracts/runtime-state.json`: Skill-local contract describing required persisted runtime state fields and values.
+- `contracts/runtime-event.json`: Skill-local contract describing required runtime event fields and event types.
 
 ### Rules
 
@@ -457,7 +457,10 @@ If you change one layer, check the adjacent layers too:
 
 ### Framework assets
 
-- `framework/*.schema.json`: Structural schemas for runtime-executable specs.
+- `framework/*-contract.schema.json`: Structural schemas for skill-local contract files under `contracts/`.
+- `framework/runtime-state.schema.json`: Structural schema for actual persisted run snapshots.
+- `framework/runtime-event.schema.json`: Structural schema for actual runtime event log entries.
+- other `framework/*.schema.json`: Structural schemas for runtime-executable specs such as machine, graph, rules, context policy, artifacts, and evals.
 - `framework/philosophy.md`: Core framework design principles.
 - `framework/ontology.yaml`: Canonical naming and concept definitions.
 

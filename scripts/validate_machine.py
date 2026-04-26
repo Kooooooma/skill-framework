@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from validate_skill import Report, check_machine_and_graph  # noqa: E402
+from validate_skill import Report, check_json_schema, check_machine_and_graph  # noqa: E402
 
 
 def main() -> int:
@@ -17,6 +17,8 @@ def main() -> int:
     args = parser.parse_args()
     root = Path(args.skill_path).expanduser().resolve()
     report = Report()
+    check_json_schema(root, "skill-machine.schema.json", "skill.machine.json", report)
+    check_json_schema(root, "node-graph.schema.json", "node.graph.json", report)
     check_machine_and_graph(root, report)
     for warning in report.warnings:
         print(f"WARN: {warning}")
